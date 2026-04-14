@@ -1,0 +1,53 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
+
+/**
+ * Vite config for the Kindness Hearts React PWA.
+ *
+ * Build output goes to ../app/dist/ which WordPress enqueues.
+ * Base is set to the plugin's URL at runtime via window.WP_CONFIG,
+ * but during build we use './' so assets resolve correctly.
+ */
+export default defineConfig({
+  base: './',
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['heart-192.png', 'heart-512.png', 'favicon.ico'],
+      manifest: false, // We provide our own manifest.json in public/
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+        runtimeCaching: [
+          {
+            // Cache WP REST API calls for offline fallback
+            urlPattern: /\/wp-json\/kindness\/v1\/(classes|total)/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'kh-api-cache',
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 },
+            },
+          },
+        ],
+      },
+    }),
+  ],
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    manifest: true,
+    rollupOptions: {
+      input: 'index.html',
+    },
+  },
+  server: {
+    // Proxy API calls to local WordPress during development
+    proxy: {
+      '/wp-json': {
+        target: 'http://localhost:8080',  // change to your local WP URL
+        changeOrigin: true,
+      },
+    },
+  },
+});

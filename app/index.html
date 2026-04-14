@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="theme-color" content="#e53e3e" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/png" href="/heart-192.png" />
+    <title>Kindness Hearts</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!--
+      In production, window.WP_CONFIG is injected by WordPress (class-frontend.php).
+      For local dev, set a fallback below:
+    -->
+    <script>
+      if (!window.WP_CONFIG) {
+        window.WP_CONFIG = {
+          restUrl: 'http://localhost:8080/wp-json/kindness/v1',
+          nonce:   '',
+          siteUrl: 'http://localhost:8080',
+        };
+      }
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

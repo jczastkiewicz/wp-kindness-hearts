@@ -1,0 +1,39 @@
+{
+  "name": "Kindness Hearts",
+  "short_name": "KindHearts",
+  "description": "Award kindness points when pupils help each other",
+  "start_url": "/kindness-app/#/teacher",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#e53e3e",
+  "categories": ["education"],
+  "icons": [
+    {
+      "src": "heart-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "heart-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add point",
+      "short_name": "Add point",
+      "url": "/kindness-app/#/teacher",
+      "icons": [{ "src": "heart-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Heart display",
+      "short_name": "Heart",
+      "url": "/kindness-app/#/heart",
+      "icons": [{ "src": "heart-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
