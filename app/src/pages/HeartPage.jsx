@@ -62,7 +62,7 @@ export default function HeartPage() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
         <HeartVisualization
           filledCount={total}
-          size={Math.min(380, window.innerWidth - 48)}
+          size={Math.min(560, window.innerWidth - 32)}
         />
 
         {/* Grand total badge */}

@@ -107,7 +107,7 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
  */
 function buildHeartGrid(size) {
   const dotR    = getDotRadius(size);
-  const spacing = dotR * 2 + 2;         // diameter + gap
+  const spacing = dotR * 2 + dotR * 0.8; // diameter + generous gap = clearly separate dots
   const cols    = Math.floor(size / spacing);
   const rows    = Math.floor(size / spacing);
   const offsetX = (size - cols * spacing) / 2 + dotR;
