@@ -181,27 +181,118 @@ The teacher app polls for class data on load. The heart display polls the total 
 
 ---
 
-## Local development
+## Building for production
 
-The project includes a Docker Compose setup for running WordPress locally.
+When you are ready to deploy to a real WordPress server, run the build script from the plugin folder:
 
 ```bash
-# Start everything (builds React app, starts WordPress + MySQL)
+./build-plugin.sh
+```
+
+This script does two things automatically. First it runs `npm install` and `npm run build` inside the `app/` directory, which compiles the React PWA into the `app/dist/` folder. Then it packages everything WordPress needs into a single zip file called `wp-kindness-hearts.zip` (approximately 90–100 KB). Source files, Docker files, and development tools are excluded from the zip.
+
+Run this script every time you make code changes before deploying.
+
+---
+
+## Uploading and installing the plugin
+
+### Option A — WordPress Admin (recommended)
+
+This is the easiest method and requires no server access.
+
+1. Open your WordPress admin panel and go to **Plugins → Add New Plugin**.
+2. Click **Upload Plugin** at the top of the page.
+3. Click **Choose File**, select `wp-kindness-hearts.zip`, and click **Install Now**.
+4. Once installed, click **Activate Plugin**.
+
+### Option B — FTP / SFTP
+
+Use this if your hosting provider does not allow plugin uploads via the admin panel.
+
+1. Unzip `wp-kindness-hearts.zip` on your computer.
+2. Using an FTP or SFTP client (e.g. FileZilla), connect to your server.
+3. Upload the `wp-kindness-hearts` folder to `/wp-content/plugins/` on the server.
+4. Go to **WP Admin → Plugins**, find Kindness Hearts in the list, and click **Activate**.
+
+### Option C — WP-CLI
+
+Use this if you have command-line access to the server and WP-CLI installed.
+
+```bash
+wp plugin install /path/to/wp-kindness-hearts.zip --activate
+```
+
+---
+
+## Server requirements
+
+The plugin works on any standard WordPress hosting. There are no unusual server requirements. WordPress 5.9 or later is recommended (for full REST API support and block editor compatibility). PHP 8.0 or later is required. No additional PHP extensions are needed.
+
+The `/kindness-app/` virtual page requires Apache `mod_rewrite` to be enabled and `AllowOverride All` set in the server configuration — both are standard on virtually all managed WordPress hosts. If the page returns a 404 after activation, go to **WP Admin → Settings → Permalinks** and click **Save Changes** to flush the rewrite rules manually.
+
+---
+
+## First-time configuration after installation
+
+After activating the plugin for the first time, follow these steps to get it ready for teachers.
+
+**Step 1 — Add classes.**
+Go to **WP Admin → Kindness Hearts**. In the left panel, type each class name (e.g. "Class 1A", "Class 2B") into the text field and click **Add Class**. Repeat for every class in the school.
+
+**Step 2 — Print or share the teacher QR code.**
+In the right panel you will see the teacher QR code. Click **🖨️ Print poster for teachers** to open a formatted A4 card with the QR code and instructions — print one copy per teacher, or save as PDF and send by email. Alternatively click **⬇️ Download QR PNG** to get a high-resolution image you can include in a message or document.
+
+**Step 3 — Open the heart display.**
+Click **❤️ Open Heart Display** to open the public projector page. Open this URL on the classroom or school projector and leave it running. The address is:
+`http://your-site/kindness-app/#/heart`
+
+**Step 4 — Verify the teacher app works.**
+Scan the QR code with a phone. The teacher app should open, show the class selector, and allow you to tap the heart button. Check that the heart display updates within 10 seconds.
+
+The plugin is now fully configured and ready to use.
+
+---
+
+## Updating the plugin
+
+To update an existing installation after making code changes:
+
+1. Run `./build-plugin.sh` to produce a new `wp-kindness-hearts.zip`.
+2. In WP Admin, go to **Plugins**, deactivate Kindness Hearts, then delete it.
+3. Re-upload and activate the new zip following the installation steps above.
+
+Existing data (classes and points) is stored in the WordPress database and is not affected by reinstalling the plugin.
+
+---
+
+## Local development
+
+The project includes a Docker Compose setup for running WordPress locally with no manual WordPress installation required.
+
+**Requirements:** Docker with Compose support, Node.js 18+.
+
+```bash
+# First run — builds React app, pulls Docker images, installs WordPress,
+# activates the plugin, and seeds sample classes (~30–60s on first run)
 ./start.sh
 
-# Stop
+# Stop Docker (React dev server stops when you press Ctrl+C)
 docker compose down
 
-# Reset (also wipes the database)
+# Full reset — stops Docker and wipes the database volume
 docker compose down -v
 ```
 
 | Service | URL |
 |---------|-----|
 | WordPress site | http://localhost:8080 |
-| WP Admin (admin / admin) | http://localhost:8080/wp-admin |
+| WP Admin (`admin` / `admin`) | http://localhost:8080/wp-admin |
 | Kindness Hearts admin | http://localhost:8080/wp-admin/admin.php?page=kindness-hearts |
 | Heart display | http://localhost:8080/kindness-app/#/heart |
+| Teacher app | http://localhost:8080/kindness-app/#/teacher?token=… |
 | phpMyAdmin | http://localhost:8081 |
+
+The Vite dev server runs on `http://localhost:5173` with hot-reload. API calls are proxied automatically to WordPress at port 8080, so you can develop the React app without rebuilding after every change. The PHP plugin files are bind-mounted into the WordPress container, so PHP changes are also reflected immediately without a restart.
 
 For hot-reload during React development, the Vite dev server runs on `http://localhost:5173` and proxies API calls to WordPress at port 8080.
