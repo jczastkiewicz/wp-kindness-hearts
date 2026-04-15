@@ -33,10 +33,10 @@ services:
       WORDPRESS_DB_NAME:     wordpress
       WORDPRESS_DEBUG:       "1"
     volumes:
-      # Mount the plugin directory (live edits reflected immediately)
+      # Share the full WP install with wpcli
+      - wp_html:/var/www/html
+      # Mount the plugin directory on top (live edits reflected immediately)
       - ./:/var/www/html/wp-content/plugins/wp-kindness-hearts
-      # Persist uploads
-      - wp_uploads:/var/www/html/wp-content/uploads
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost/ -o /dev/null"]
       interval: 5s
@@ -57,9 +57,11 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME:     wordpress
     volumes:
+      # Same WP root as wordpress container
+      - wp_html:/var/www/html
+      # Same plugin mount
       - ./:/var/www/html/wp-content/plugins/wp-kindness-hearts
-      - wp_uploads:/var/www/html/wp-content/uploads
-      # Mount the setup script
+      # Setup script
       - ./docker/setup.sh:/setup.sh:ro
     entrypoint: ["sh", "/setup.sh"]
 
@@ -78,4 +80,4 @@ services:
 
 volumes:
   db_data:
-  wp_uploads:
+  wp_html:

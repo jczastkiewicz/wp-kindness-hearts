@@ -121,9 +121,10 @@ function buildHeartGrid(size) {
       const px = offsetX + col * spacing;
       const py = offsetY + row * spacing;
 
-      // Normalize to [-1.2, 1.2] × [-1.3, 1.0]
-      const nx =  ((px / size) * 2.4) - 1.2;
-      const ny = -((py / size) * 2.3) + 1.0;   // flip Y so heart is right-way up
+      // Normalize to [-1.3, 1.3] × [-1.25, 1.5]
+      // Push ny ceiling higher to show more of the top bumps
+      const nx =  ((px / size) * 2.6) - 1.3;
+      const ny = -((py / size) * 2.75) + 1.5;   // flip Y so heart is right-way up
 
       if (isInsideHeart(nx, ny)) {
         positions.push({ x: px, y: py });
@@ -141,8 +142,8 @@ function isInsideHeart(x, y) {
 }
 
 function getDotRadius(size) {
-  // Scale dot size with overall container size
-  return Math.max(4, Math.round(size / 56));
+  // Scale dot size with overall container size (smaller = more dots)
+  return Math.max(2, Math.round(size / 110));
 }
 
 /** Fisher-Yates shuffle (returns new array) */

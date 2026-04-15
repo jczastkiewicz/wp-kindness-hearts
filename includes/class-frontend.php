@@ -58,8 +58,10 @@ class KH_Frontend {
 
         if ( file_exists( $manifest_path ) ) {
             $manifest = json_decode( file_get_contents( $manifest_path ), true );
-            if ( isset( $manifest['src/main.jsx'] ) ) {
-                $entry = $manifest['src/main.jsx'];
+            // Vite uses 'index.html' as entry key when input is index.html
+            $entry_key = isset( $manifest['index.html'] ) ? 'index.html' : 'src/main.jsx';
+            if ( isset( $manifest[ $entry_key ] ) ) {
+                $entry    = $manifest[ $entry_key ];
                 $js_file  = $entry['file']   ?? $js_file;
                 $css_file = $entry['css'][0] ?? '';
             }
