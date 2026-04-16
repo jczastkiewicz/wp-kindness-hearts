@@ -294,5 +294,3 @@ docker compose down -v
 | phpMyAdmin | http://localhost:8081 |
 
 The Vite dev server runs on `http://localhost:5173` with hot-reload. API calls are proxied automatically to WordPress at port 8080, so you can develop the React app without rebuilding after every change. The PHP plugin files are bind-mounted into the WordPress container, so PHP changes are also reflected immediately without a restart.
-
-For hot-reload during React development, the Vite dev server runs on `http://localhost:5173` and proxies API calls to WordPress at port 8080.
