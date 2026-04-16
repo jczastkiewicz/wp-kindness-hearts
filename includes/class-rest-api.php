@@ -94,16 +94,26 @@ class KH_REST_API {
 
     /**
      * Token can be passed as ?token=... query param OR X-KH-Token header.
+     *
+     * Returns false (→ 401) when no token is provided at all.
+     * Returns WP_Error 403 when a token is provided but doesn't match.
+     * This lets callers distinguish "missing token" from "wrong token".
      */
-    public static function token_permission( WP_REST_Request $request ): bool {
+    public static function token_permission( WP_REST_Request $request ): bool|WP_Error {
         $stored = get_option( 'kh_secret_token', '' );
         if ( ! $stored ) {
-            return false;
+            return new WP_Error( 'no_token_configured', 'No token configured', [ 'status' => 403 ] );
         }
         $provided = $request->get_param( 'token' )
                     ?? $request->get_header( 'X-KH-Token' )
                     ?? '';
-        return hash_equals( $stored, (string) $provided );
+        if ( ! $provided ) {
+            return false; // No token at all → WordPress returns 401
+        }
+        if ( ! hash_equals( $stored, (string) $provided ) ) {
+            return new WP_Error( 'invalid_token', 'Invalid token', [ 'status' => 403 ] );
+        }
+        return true;
     }
 
     // ── Handlers ─────────────────────────────────────────────────────────────
