@@ -1,4 +1,28 @@
+# ── React app ────────────────────────────────────────────────────
 app/node_modules/
 app/dist/
 app/vite.config.js.timestamp-*.mjs
+
+# ── Playwright tests ──────────────────────────────────────────────
+tests/node_modules/
+tests/playwright-report/
+tests/test-results/
+tests/.auth.json
+tests/.test-state.json
+
+# ── Production build artefact ─────────────────────────────────────
 wp-kindness-hearts.zip
+
+# ── WordPress / Docker local state ────────────────────────────────
+*.log
+wp-config.php
+
+# ── macOS ─────────────────────────────────────────────────────────
+.DS_Store
+__MACOSX/
+
+# ── Editors ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo

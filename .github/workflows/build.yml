@@ -1,0 +1,52 @@
+name: Build plugin
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build React app
+        working-directory: app
+        run: npm run build
+
+      - name: Package plugin zip
+        run: |
+          cd ..
+          zip -r wp-kindness-hearts/wp-kindness-hearts.zip wp-kindness-hearts \
+            --include \
+              "wp-kindness-hearts/wp-kindness-hearts.php" \
+              "wp-kindness-hearts/includes/*.php" \
+              "wp-kindness-hearts/app/dist/*" \
+              "wp-kindness-hearts/app/dist/**/*" \
+              "wp-kindness-hearts/app/dist/.vite/*" \
+              "wp-kindness-hearts/app/public/heart-192.png" \
+              "wp-kindness-hearts/app/public/heart-512.png" \
+              "wp-kindness-hearts/app/public/manifest.json" \
+            -x "*.DS_Store" -x "*__MACOSX*"
+
+      - name: Upload zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wp-kindness-hearts
+          path: wp-kindness-hearts.zip
+          retention-days: 30
