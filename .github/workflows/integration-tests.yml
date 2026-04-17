@@ -114,7 +114,27 @@ jobs:
           path: tests/test-results/
           retention-days: 7
 
-      # ── 8. Tear down Docker ───────────────────────────────────────────────────
+      # ── 8. Write job summary ─────────────────────────────────────────────────
+      - name: Write job summary
+        if: always()
+        working-directory: tests
+        run: |
+          echo "## 🧪 Playwright Integration Tests" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f playwright-report/index.html ]; then
+            PASSED=$(grep -o '"passed":[0-9]*' playwright-report/index.html 2>/dev/null | head -1 | grep -o '[0-9]*' || echo "?")
+            FAILED=$(grep -o '"failed":[0-9]*' playwright-report/index.html 2>/dev/null | head -1 | grep -o '[0-9]*' || echo "?")
+            SKIPPED=$(grep -o '"skipped":[0-9]*' playwright-report/index.html 2>/dev/null | head -1 | grep -o '[0-9]*' || echo "?")
+            echo "| ✅ Passed | ❌ Failed | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+            echo "|-----------|-----------|------------|" >> $GITHUB_STEP_SUMMARY
+            echo "| $PASSED | $FAILED | $SKIPPED |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No report generated — tests may have failed to start." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📄 Full report available in the **playwright-report** artifact above." >> $GITHUB_STEP_SUMMARY
+
+      # ── 9. Tear down Docker ───────────────────────────────────────────────────
       - name: Stop Docker containers
         if: always()
         run: docker compose -f docker-compose.test.yml down -v

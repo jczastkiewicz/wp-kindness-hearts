@@ -1,5 +1,13 @@
 # Kindness Hearts — Application Documentation
 
+[![Build plugin](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/build.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/build.yml)
+[![Integration tests](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/integration-tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![WordPress](https://img.shields.io/badge/WordPress-5.9%2B-21759b?logo=wordpress&logoColor=white)](https://wordpress.org)
+[![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)](https://php.net)
+[![Node](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=black)](https://react.dev)
+
 ## Overview
 
 **Kindness Hearts** is a WordPress plugin designed for primary schools. It helps teachers celebrate and track acts of kindness between pupils. When one pupil helps another, a teacher taps a button to award a kindness point. Points accumulate across all classes and the whole school, and are visualised as a growing heart made of coloured dots — one dot per act of kindness.
