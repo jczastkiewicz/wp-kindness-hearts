@@ -21,6 +21,13 @@ wp-config.php
 .DS_Store
 __MACOSX/
 
+# ── PHP / Composer ────────────────────────────────────────────────
+vendor/
+composer.lock
+
+# ── Coverage ──────────────────────────────────────────────────────
+app/coverage/
+
 # ── Editors ───────────────────────────────────────────────────────
 .vscode/
 .idea/

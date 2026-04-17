@@ -50,4 +50,22 @@ export default defineConfig({
       },
     },
   },
+
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: [],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov', 'html'],
+      include: ['src/**'],
+      exclude: ['src/main.jsx'],
+      thresholds: {
+        lines: 0,      // raise these as you add unit tests
+        functions: 0,
+        branches: 0,
+        statements: 0,
+      },
+    },
+  },
 });

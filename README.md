@@ -2,6 +2,8 @@
 
 [![Build plugin](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/build.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/build.yml)
 [![Integration tests](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/integration-tests.yml)
+[![Code quality](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/code-quality.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/code-quality.yml)
+[![Security](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/security.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-5.9%2B-21759b?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)](https://php.net)

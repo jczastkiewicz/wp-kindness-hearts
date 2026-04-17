@@ -1,0 +1,15 @@
+includes:
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+  level: 5
+
+  paths:
+    - wp-kindness-hearts.php
+    - includes
+
+  phpVersion: 80000
+
+  # Ignore known WordPress global patterns that PHPStan can't resolve
+  ignoreErrors:
+    - '#Unsafe usage of new static\(\)#'

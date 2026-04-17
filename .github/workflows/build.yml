@@ -29,6 +29,38 @@ jobs:
         working-directory: app
         run: npm run build
 
+      # ── Unit tests + coverage ─────────────────────────────────────────────────
+      - name: Run unit tests with coverage
+        working-directory: app
+        run: npm run coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: app/coverage/
+          retention-days: 30
+
+      - name: Write coverage summary
+        if: always()
+        working-directory: app
+        run: |
+          echo "## 📊 Unit Test Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            LINES=$(node -e "const c=require('./coverage/coverage-summary.json').total; console.log(c.lines.pct+'%')" 2>/dev/null || echo "n/a")
+            FUNCS=$(node -e "const c=require('./coverage/coverage-summary.json').total; console.log(c.functions.pct+'%')" 2>/dev/null || echo "n/a")
+            BRANCHES=$(node -e "const c=require('./coverage/coverage-summary.json').total; console.log(c.branches.pct+'%')" 2>/dev/null || echo "n/a")
+            echo "| Lines | Functions | Branches |" >> $GITHUB_STEP_SUMMARY
+            echo "|-------|-----------|----------|" >> $GITHUB_STEP_SUMMARY
+            echo "| $LINES | $FUNCS | $BRANCHES |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "_No unit tests yet — add test files to \`app/src/\` to see coverage here._" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> Coverage is collected from Vitest unit tests. Full E2E coverage is tracked via Playwright integration tests." >> $GITHUB_STEP_SUMMARY
+
       - name: Package plugin zip
         run: |
           cd ..
