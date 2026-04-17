@@ -56,10 +56,9 @@ jobs:
         with:
           node-version: 20
 
-      - name: Audit app production dependencies
+      - name: Audit app dependencies
         working-directory: app
-        # --omit=dev: only check what ships to users (vite/vitest/workbox are build tools, not bundled)
-        run: npm audit --omit=dev --audit-level=high
+        run: npm audit --audit-level=high
 
       - name: Audit test dependencies
         working-directory: tests
