@@ -22,7 +22,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [javascript-typescript, php]
+        # PHP is covered by PHPStan in the code-quality workflow.
+        # CodeQL PHP requires additional build setup and is omitted here.
+        language: [javascript-typescript]
 
     steps:
       - name: Checkout
@@ -56,9 +58,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Audit app dependencies
+      - name: Audit app production dependencies
         working-directory: app
-        run: npm audit --audit-level=high
+        # --omit=dev: vite/vitest/workbox are build tools only — not bundled into the plugin
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Audit test dependencies
         working-directory: tests
