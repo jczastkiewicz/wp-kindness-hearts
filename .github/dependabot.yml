@@ -1,0 +1,40 @@
+version: 2
+updates:
+  # React app dependencies
+  - package-ecosystem: "npm"
+    directory: "/app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies"]
+    groups:
+      react:
+        patterns: ["react", "react-dom", "react-router-dom"]
+      vite:
+        patterns: ["vite*", "@vitejs/*"]
+      types:
+        patterns: ["@types/*"]
+
+  # Playwright test dependencies
+  - package-ecosystem: "npm"
+    directory: "/tests"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "testing"]
+
+  # Composer (PHP static analysis)
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "php"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "github-actions"]
