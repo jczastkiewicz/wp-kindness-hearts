@@ -1,4 +1,4 @@
-# Kindness Hearts — Application Documentation
+# Kindness Hearts
 
 [![Build plugin](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/build.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/build.yml)
 [![Integration tests](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/jczastkiewicz/wp-kindness-hearts/actions/workflows/integration-tests.yml)
@@ -8,7 +8,7 @@
 [![WordPress](https://img.shields.io/badge/WordPress-5.9%2B-21759b?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)](https://php.net)
 [![Node](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
-[![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=black)](https://react.dev)
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=black)](https://react.dev)
 [![Coverage](https://codecov.io/gh/jczastkiewicz/wp-kindness-hearts/graph/badge.svg)](https://codecov.io/gh/jczastkiewicz/wp-kindness-hearts)
 
 ## Overview
@@ -277,11 +277,91 @@ Existing data (classes and points) is stored in the WordPress database and is no
 
 ---
 
+## Project structure
+
+```
+wp-kindness-hearts/
+├── wp-kindness-hearts.php   # Plugin entry point — constants, hooks, activation
+├── includes/
+│   ├── class-rest-api.php   # All REST endpoints (/wp-json/kindness/v1/*)
+│   ├── class-admin.php      # WP Admin page (class manager + QR code)
+│   └── class-frontend.php   # CPT registration, virtual /kindness-app/ page
+├── app/                     # React PWA (Vite + Vitest)
+│   ├── src/
+│   │   ├── App.jsx          # Hash-based router (/#/teacher, /#/heart)
+│   │   ├── api/wpApi.js     # REST client + useClasses / useTotal hooks
+│   │   ├── components/
+│   │   │   └── HeartVisualization.jsx   # SVG dot-heart component
+│   │   └── pages/
+│   │       ├── HeartPage.jsx    # Public projector display
+│   │       └── TeacherPage.jsx  # Teacher point-award panel
+│   ├── src/__tests__/       # Unit tests (Vitest + Testing Library)
+│   ├── vite.config.js       # Vite + Vitest + PWA config
+│   └── package.json
+├── tests/                   # Playwright integration tests
+│   ├── global-setup.js      # Install plugin, authenticate, capture token
+│   ├── 01-configure.spec.js
+│   ├── 02-teacher.spec.js
+│   ├── 03-heart.spec.js
+│   └── 04-security.spec.js
+├── .github/
+│   ├── workflows/           # CI: build, integration-tests, code-quality, security
+│   └── dependabot.yml       # Automated dependency updates
+├── phpstan.neon             # PHPStan static analysis config (level 5)
+├── composer.json            # Dev: PHPStan + WordPress stubs
+├── start.sh                 # Start local dev environment
+├── start-test.sh            # Start integration test environment
+├── run-tests.sh             # Run Playwright tests
+└── build-plugin.sh          # Build zip for production deployment
+```
+
+---
+
+## Unit tests
+
+Unit tests cover the React app — all API functions, custom hooks, and UI components. They run with [Vitest](https://vitest.dev) and [Testing Library](https://testing-library.com).
+
+```bash
+cd app
+
+npm test          # run tests once
+npm run coverage  # run tests with v8 coverage report (text + lcov + HTML)
+```
+
+Current coverage: **~96% statements, ~98% lines** across all source files. The HTML report is written to `app/coverage/` and is uploaded to [Codecov](https://codecov.io/gh/jczastkiewicz/wp-kindness-hearts) on every CI run.
+
+Test files live alongside their source modules in `__tests__/` directories:
+
+| Test file | What it covers |
+|-----------|---------------|
+| `api/__tests__/wpApi.test.js` | `fetchClasses`, `fetchTotal`, `addPoint`, `useClasses` hook, `useTotal` hook |
+| `__tests__/App.test.jsx` | Hash-based routing — all four routes |
+| `components/__tests__/HeartVisualization.test.jsx` | SVG rendering, aria labels, fill clamping, animation |
+| `pages/__tests__/HeartPage.test.jsx` | Loading state, leaderboard sort, singular/plural badge |
+| `pages/__tests__/TeacherPage.test.jsx` | Guard states, addPoint flow, error display, class switching |
+
+---
+
+## CI / quality pipeline
+
+Every push and pull request runs four GitHub Actions workflows:
+
+| Workflow | What runs |
+|----------|-----------|
+| **Build** | `npm ci`, Vite production build, Vitest unit tests + coverage upload to Codecov, plugin zip artifact |
+| **Integration tests** | Docker WordPress, install from zip, Playwright E2E (4 spec files) |
+| **Code quality** | PHP syntax check, PHPStan level 5 (with WordPress stubs), ESLint (flat config, React rules) |
+| **Security** | CodeQL (JavaScript/TypeScript), Trivy filesystem scan (SARIF → Security tab), `npm audit` production deps |
+
+[Dependabot](https://docs.github.com/en/code-security/dependabot) is configured to open weekly PRs for npm (grouped by `react` and `vite` groups), Composer, and GitHub Actions updates.
+
+---
+
 ## Local development
 
 The project includes a Docker Compose setup for running WordPress locally with no manual WordPress installation required.
 
-**Requirements:** Docker with Compose support, Node.js 18+.
+**Requirements:** Docker with Compose support, Node.js 20+.
 
 ```bash
 # First run — builds React app, pulls Docker images, installs WordPress,
