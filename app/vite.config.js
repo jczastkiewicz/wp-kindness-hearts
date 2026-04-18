@@ -55,7 +55,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     passWithNoTests: true,
-    setupFiles: [],
+    setupFiles: ['./src/__tests__/setup.js'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
