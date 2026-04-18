@@ -143,7 +143,7 @@ class KH_REST_API {
             'post_type'   => 'kh_class',
             'post_status' => 'publish',
             'post_title'  => $request->get_param( 'name' ),
-        ] );
+        ], true ); // pass $wp_error=true so failures return WP_Error, not 0
 
         if ( is_wp_error( $id ) ) {
             return $id;
