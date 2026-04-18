@@ -69,14 +69,14 @@ describe('addPoint', () => {
   it('sends token in X-KH-Token header', async () => {
     mockFetch({ class_id: 1, class_points: 1, total_points: 1 });
     await addPoint(1, 'secret');
-    const [, init] = global.fetch.mock.calls[0];
+    const [, init] = fetch.mock.calls[0];
     expect(init.headers['X-KH-Token']).toBe('secret');
   });
 
   it('encodes token in query string', async () => {
     mockFetch({ class_id: 1, class_points: 1, total_points: 1 });
     await addPoint(1, 'my token');
-    const [fetchUrl] = global.fetch.mock.calls[0];
+    const [fetchUrl] = fetch.mock.calls[0];
     expect(fetchUrl).toContain('token=my%20token');
   });
 });
