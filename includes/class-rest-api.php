@@ -118,7 +118,7 @@ class KH_REST_API {
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 
-    public static function get_classes(): WP_REST_Response {
+    public static function get_classes(): WP_REST_Response|WP_Error {
         $posts = get_posts( [
             'post_type'      => 'kh_class',
             'post_status'    => 'publish',
@@ -201,13 +201,13 @@ class KH_REST_API {
         ] );
     }
 
-    public static function get_total(): WP_REST_Response {
+    public static function get_total(): WP_REST_Response|WP_Error {
         return rest_ensure_response( [
             'total' => (int) get_option( 'kh_total_points', 0 ),
         ] );
     }
 
-    public static function reset_all(): WP_REST_Response {
+    public static function reset_all(): WP_REST_Response|WP_Error {
         update_option( 'kh_total_points', 0 );
 
         $posts = get_posts( [
@@ -223,7 +223,7 @@ class KH_REST_API {
         return rest_ensure_response( [ 'reset' => true ] );
     }
 
-    public static function regenerate_token(): WP_REST_Response {
+    public static function regenerate_token(): WP_REST_Response|WP_Error {
         $token = wp_generate_password( 32, false );
         update_option( 'kh_secret_token', $token );
 
