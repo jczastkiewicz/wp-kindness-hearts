@@ -9,6 +9,7 @@
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)](https://php.net)
 [![Node](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=black)](https://react.dev)
+[![Coverage](https://codecov.io/gh/jczastkiewicz/wp-kindness-hearts/graph/badge.svg)](https://codecov.io/gh/jczastkiewicz/wp-kindness-hearts)
 
 ## Overview
 

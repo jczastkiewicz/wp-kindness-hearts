@@ -34,6 +34,13 @@ jobs:
         working-directory: app
         run: npm run coverage
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: app/coverage/lcov.info
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v7
