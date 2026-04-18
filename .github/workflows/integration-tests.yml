@@ -14,7 +14,7 @@ jobs:
     steps:
       # ── 1. Checkout ───────────────────────────────────────────────────────────
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # ── 2. Build the React app ────────────────────────────────────────────────
       - name: Set up Node.js
