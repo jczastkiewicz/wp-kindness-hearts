@@ -24,12 +24,13 @@ class KH_Admin {
         if ( ! str_contains( $hook, 'kindness-hearts' ) ) {
             return;
         }
-        // qr-code-styling — supports rounded dots, styled corners, centre logo
+        // qr-code-styling — bundled locally (MIT, see assets/js/qr-code-styling.LICENSE.txt)
+        // Supports rounded dots, styled corners, centre logo.
         wp_enqueue_script(
             'qr-code-styling',
-            'https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js',
+            KH_PLUGIN_URL . 'assets/js/qr-code-styling.js',
             [],
-            '1.6.0',
+            '1.6.0-rc.1',
             true
         );
     }
@@ -241,10 +242,9 @@ class KH_Admin {
   <meta charset="UTF-8">
   <title>Kindness Hearts – Teacher QR Code</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: #fff;
       display: flex;
       align-items: center;
