@@ -200,7 +200,7 @@ export default function TeacherPage() {
           </button>
         </div>
 
-        <p style={{ color: '#a0aec0', fontSize: '.8rem' }}>
+        <p style={{ color: '#4a5568', fontSize: '.8rem' }}>
           Tap the heart to award +1 kindness point
         </p>
 
