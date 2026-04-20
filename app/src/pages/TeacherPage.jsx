@@ -68,7 +68,7 @@ export default function TeacherPage() {
       setAddError(e.message);
       // Keep the live region message distinct from the visible error text to
       // avoid duplicate getByText matches in tests while still announcing it.
-      setLiveMessage('Error: ' + e.message);
+      setLiveMessage('An error occurred while adding the point.');
       setTimeout(() => setLiveMessage(''), 4000);
     } finally {
       setAdding(false);
