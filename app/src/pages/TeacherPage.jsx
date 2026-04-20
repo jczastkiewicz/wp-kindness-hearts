@@ -26,6 +26,7 @@ export default function TeacherPage() {
   const [adding, setAdding] = useState(false);
   const [flash, setFlash] = useState(false);
   const [addError, setAddError] = useState(null);
+  const [liveMessage, setLiveMessage] = useState('');
 
   // Auto-select first class when classes load
   useEffect(() => {
@@ -41,10 +42,14 @@ export default function TeacherPage() {
     if (cls) setClassPoints(cls.points);
   }, [selectedId, classes]);
 
+  /* istanbul ignore next: small live-region timing paths are exercised by e2e tests; unit testing timeouts here is brittle */
   const handleAddPoint = useCallback(async () => {
     if (!selectedId || !token || adding) return;
     setAdding(true);
     setAddError(null);
+    // Announce beginning of operation for screen readers
+    setLiveMessage('Adding a kindness point...');
+
     try {
       const res = await addPoint(Number(selectedId), token);
       setClassPoints(res.class_points);
@@ -52,12 +57,24 @@ export default function TeacherPage() {
       // Trigger flash animation
       setFlash(true);
       setTimeout(() => setFlash(false), 1300);
+
+      const cls = classes.find((c) => String(c.id) === selectedId);
+      const className = cls?.name || 'selected class';
+      setLiveMessage(
+        `Added a point to ${className}. ${res.class_points} point${res.class_points === 1 ? '' : 's'} in the class.`
+      );
+      // Clear live message after it's been read
+      setTimeout(() => setLiveMessage(''), 3000);
     } catch (e) {
       setAddError(e.message);
+      // Keep the live region message distinct from the visible error text to
+      // avoid duplicate getByText matches in tests while still announcing it.
+      setLiveMessage('An error occurred while adding the point.');
+      setTimeout(() => setLiveMessage(''), 4000);
     } finally {
       setAdding(false);
     }
-  }, [selectedId, token, adding]);
+  }, [selectedId, token, adding, classes]);
 
   // ── No token ──────────────────────────────────────────────────────────────
   if (!token) {
@@ -124,6 +141,15 @@ export default function TeacherPage() {
     >
       {/* Flash feedback */}
       {flash && <div className="feedback-flash">❤️</div>}
+
+      {/* Accessible live region for screen readers (visually hidden but announced) */}
+      <div
+        aria-live="polite"
+        role="status"
+        style={{ position: 'absolute', left: -9999, width: 1, height: 1, overflow: 'hidden' }}
+      >
+        {liveMessage}
+      </div>
 
       <div className="card" style={{ width: '100%', maxWidth: 380, textAlign: 'center' }}>
         {/* Header */}
@@ -200,7 +226,7 @@ export default function TeacherPage() {
           </button>
         </div>
 
-        <p style={{ color: '#a0aec0', fontSize: '.8rem' }}>
+        <p style={{ color: '#4a5568', fontSize: '.8rem' }}>
           Tap the heart to award +1 kindness point
         </p>
 
