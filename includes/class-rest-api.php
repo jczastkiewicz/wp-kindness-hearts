@@ -90,6 +90,14 @@ class KHearts_REST_API
             'callback' => [self::class, 'regenerate_token'],
             'permission_callback' => [self::class, 'admin_permission'],
         ]);
+
+        // Return current token (admin-only) — used by the admin page to lazily
+        // fetch the teacher QR token instead of embedding it in page HTML.
+        register_rest_route($ns, '/token', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [self::class, 'get_token'],
+            'permission_callback' => [self::class, 'admin_permission'],
+        ]);
     }
 
     // ── Permission callbacks ─────────────────────────────────────────────────
@@ -269,6 +277,18 @@ class KHearts_REST_API
     {
         $token = wp_generate_password(32, false);
         update_option('khearts_secret_token', $token);
+
+        // Do not return the token in the response body — admin UI reloads and
+        // reads the token via wp_localize_script or the /token endpoint.
+        return rest_ensure_response(['success' => true]);
+    }
+
+    public static function get_token(): WP_REST_Response|WP_Error
+    {
+        $token = get_option('khearts_secret_token', '');
+        if (! $token) {
+            return new WP_Error('no_token', 'No token configured', ['status' => 404]);
+        }
 
         return rest_ensure_response(['token' => $token]);
     }

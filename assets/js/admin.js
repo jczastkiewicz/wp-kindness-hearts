@@ -15,7 +15,7 @@
     const api        = KH.restUrl;
     const nonce      = KH.nonce;
     const headers    = { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce };
-    const teacherUrl = KH.siteUrl + '/kindness-app/#/teacher?token=' + encodeURIComponent( KH.secretToken );
+    let teacherUrl    = null; // constructed after fetching admin-only token
     const schoolName = KH.schoolName;
 
     // ── Solid heart SVG as data URL (centre logo) ────────────────────────────
@@ -71,7 +71,22 @@
 
     function initQR() {
         if ( typeof QRCodeStyling === 'undefined' ) { setTimeout( initQR, 100 ); return; }
-        qrStyling = buildQR( document.getElementById( 'kh-qrcode' ), 220 );
+        // Fetch the admin-only secret token lazily and then build the QR using it.
+        fetch( api + '/token', { method: 'GET', headers: { 'X-WP-Nonce': nonce } } )
+            .then( r => {
+                if (! r.ok) throw new Error('Failed to fetch token');
+                return r.json();
+            } )
+            .then( data => {
+                teacherUrl = KH.siteUrl + '/kindness-app/#/teacher?token=' + encodeURIComponent( data.token );
+                qrStyling = buildQR( document.getElementById( 'kh-qrcode' ), 220 );
+            } )
+            .catch( e => {
+                // If token fetch fails show an explanatory message in the QR area.
+                const el = document.getElementById('kh-qrcode');
+                el.innerHTML = '<div style="color:#c0392b;">Unable to load teacher QR token.</div>';
+                console.error(e);
+            });
     }
     initQR();
 
