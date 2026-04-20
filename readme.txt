@@ -2,7 +2,7 @@
 Contributors: jczastkiewicz
 Tags: education, school, gamification, classroom, kindness
 Requires at least: 5.9
-Tested up to: 7.0
+Tested up to: 6.5
 Requires PHP: 8.0
 Stable tag: 1.0.0
 License: GPLv2 or later

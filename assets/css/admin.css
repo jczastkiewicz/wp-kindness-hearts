@@ -1,0 +1,9 @@
+/* Admin styles extracted from inline styles for better overrides */
+#kh-stats { display:flex; gap:20px; margin:16px 0; }
+#kh-stats > div { padding:16px 24px; border-radius:8px; min-width:140px; text-align:center; }
+#kh-stats .total { background:#fff3cd; }
+#kh-stats .classes { background:#d1ecf1; }
+#kh-add-class-form input { flex:1; padding:8px 12px; border:1px solid #ccc; border-radius:4px; }
+#kh-qrcode { margin:16px 0; line-height:0; }
+.kh-button-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.kh-small-note { word-break:break-all; font-size:.8rem; color:#666; background:#f9f9f9; padding:8px; border-radius:4px; margin-bottom:12px; }

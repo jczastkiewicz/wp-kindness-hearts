@@ -140,7 +140,8 @@ class KHearts_REST_API
         $posts = get_posts([
             'post_type' => 'khearts_class',
             'post_status' => 'publish',
-            'posts_per_page' => -1,
+            // Cap results to avoid unbounded lists on very large installs
+            'posts_per_page' => 500,
             'orderby' => 'title',
             'order' => 'ASC',
         ]);

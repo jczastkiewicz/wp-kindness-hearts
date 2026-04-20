@@ -57,7 +57,7 @@ export default function HeartPage() {
             lineHeight: 1.1,
           }}
         >
-          Our Kindness Heart ❤️
+          Our Kindness Heart <span aria-hidden="true">❤️</span>
         </h1>
         <p style={{ color: '#718096', marginTop: 8, fontSize: 'clamp(.85rem, 2vw, 1.05rem)' }}>
           Every dot represents one moment of kindness

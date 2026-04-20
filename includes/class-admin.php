@@ -46,6 +46,14 @@ class KHearts_Admin
             true
         );
 
+        // Admin styles (extracted from inline styles to an enqueued stylesheet)
+        wp_enqueue_style(
+            'kindness-hearts-admin-css',
+            KHEARTS_PLUGIN_URL . 'assets/css/admin.css',
+            [],
+            KHEARTS_VERSION
+        );
+
         wp_localize_script(
             'kindness-hearts-admin',
             'KH',
