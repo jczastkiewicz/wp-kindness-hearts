@@ -5,7 +5,12 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock the wpApi module used by TeacherPage
 vi.mock('../../api/wpApi.js', () => ({
-  useClasses: () => ({ classes: [{ id: 1, name: '3A', points: 0 }], loading: false, error: null, refresh: vi.fn() }),
+  useClasses: () => ({
+    classes: [{ id: 1, name: '3A', points: 0 }],
+    loading: false,
+    error: null,
+    refresh: vi.fn(),
+  }),
   useTotal: () => ({ total: 0, loading: false, error: null, refresh: vi.fn() }),
   addPoint: vi.fn(),
 }));
@@ -23,7 +28,7 @@ describe('TeacherPage — addPoint flows', () => {
     addPoint.mockResolvedValueOnce({ class_id: 1, class_points: 1, total_points: 1 });
 
     render(
-      <MemoryRouter initialEntries={["/teacher?token=secret"]}>
+      <MemoryRouter initialEntries={['/teacher?token=secret']}>
         <Routes>
           <Route path="/teacher" element={<TeacherPage />} />
         </Routes>
@@ -51,7 +56,7 @@ describe('TeacherPage — addPoint flows', () => {
     addPoint.mockRejectedValueOnce(new Error('Invalid token. Please rescan the QR code.'));
 
     render(
-      <MemoryRouter initialEntries={["/teacher?token=secret"]}>
+      <MemoryRouter initialEntries={['/teacher?token=secret']}>
         <Routes>
           <Route path="/teacher" element={<TeacherPage />} />
         </Routes>
