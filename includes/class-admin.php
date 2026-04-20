@@ -58,8 +58,10 @@ class KHearts_Admin {
     }
 
     public static function render_page(): void {
-        $app_path  = site_url( '/kindness-app/' );
-        $heart_url = $app_path . '#/heart';
+        $token       = get_option( 'khearts_secret_token', '' );
+        $app_path    = site_url( '/kindness-app/' );
+        $teacher_url = $app_path . '#/teacher?token=' . rawurlencode( $token );
+        $heart_url   = $app_path . '#/heart';
         ?>
         <div class="wrap" id="kh-admin">
             <h1>&#x2764;&#xFE0F; <?php esc_html_e( 'Kindness Hearts', 'kindness-hearts' ); ?></h1>
@@ -118,6 +120,13 @@ class KHearts_Admin {
 
                     <!-- QR renders here -->
                     <div id="kh-qrcode" style="margin:16px 0;line-height:0;"></div>
+
+                    <p style="word-break:break-all;font-size:.8rem;color:#666;background:#f9f9f9;padding:8px;border-radius:4px;margin-bottom:12px;">
+                        <strong><?php esc_html_e( 'App URL:', 'kindness-hearts' ); ?></strong><br>
+                        <a href="<?php echo esc_url( $teacher_url ); ?>" target="_blank">
+                            <?php echo esc_html( $teacher_url ); ?>
+                        </a>
+                    </p>
 
                     <p style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
                         <button class="button button-primary" id="kh-print-btn">
