@@ -69,8 +69,19 @@
         return qr;
     }
 
+    let initQrTries = 0;
+    const INIT_QR_MAX = 30;
     function initQR() {
-        if ( typeof QRCodeStyling === 'undefined' ) { setTimeout( initQR, 100 ); return; }
+        if ( typeof QRCodeStyling === 'undefined' ) {
+            initQrTries++;
+            if (initQrTries > INIT_QR_MAX) {
+                const el = document.getElementById('kh-qrcode');
+                el.innerHTML = '<div style="color:#c0392b;">QR library failed to load — please check your connection.</div>';
+                return;
+            }
+            setTimeout( initQR, 100 );
+            return;
+        }
         // Fetch the admin-only secret token lazily and then build the QR using it.
         fetch( api + '/token', { method: 'GET', headers: { 'X-WP-Nonce': nonce } } )
             .then( r => {
@@ -110,13 +121,25 @@
             qrOptions:            { errorCorrectionLevel: 'H' },
         } );
         tmpQR.append( tmp );
-        // Wait for image to load inside the QR library
-        setTimeout( () => {
+        // Poll for the canvas element instead of relying on a fixed timeout.
+        let tries = 0;
+        const maxTries = 20; // ~2s at 100ms interval
+        const iv = setInterval(() => {
             const canvas = tmp.querySelector( 'canvas' );
-            const dataUrl = canvas ? canvas.toDataURL( 'image/png' ) : '';
-            document.body.removeChild( tmp );
-            callback( dataUrl );
-        }, 600 );
+            if (canvas) {
+                const dataUrl = canvas.toDataURL( 'image/png' );
+                clearInterval(iv);
+                document.body.removeChild( tmp );
+                callback(dataUrl);
+                return;
+            }
+            tries++;
+            if (tries >= maxTries) {
+                clearInterval(iv);
+                document.body.removeChild( tmp );
+                callback('');
+            }
+        }, 100);
     }
 
     // ── Download PNG ─────────────────────────────────────────────────────────

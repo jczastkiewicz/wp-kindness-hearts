@@ -15,8 +15,9 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
   // ── Build the heart grid ────────────────────────────────────────────────
   const { positions, capacity } = useMemo(() => buildHeartGrid(size), [size]);
 
-  // ── Stable random order for filling dots ────────────────────────────────
-  const fillOrder = useMemo(() => shuffleArray(positions.map((_, i) => i)), [positions]);
+  // ── Stable random order for filling dots (seeded by capacity so order is
+  // stable across reloads) ───────────────────────────────────────────────
+  const fillOrder = useMemo(() => seededShuffle(positions.map((_, i) => i), capacity), [positions, capacity]);
 
   // ── Track which dots are "popping" (newly filled) ────────────────────────
   const prevFilledRef = useRef(0);
@@ -142,14 +143,27 @@ function isInsideHeart(x, y) {
 
 function getDotRadius(size) {
   // Scale dot size with overall container size (smaller = more dots)
-  return Math.max(2, Math.round(size / 110));
+  // Increase the minimum radius to improve visibility on projectors / large displays
+  return Math.max(4, Math.round(size / 110));
 }
 
-/** Fisher-Yates shuffle (returns new array) */
-function shuffleArray(arr) {
+/**
+ * Seeded shuffle using a simple Mulberry32 PRNG so the order is stable across
+ * page reloads given the same seed (e.g., capacity).
+ */
+function seededShuffle(arr, seed) {
   const a = [...arr];
+  // Simple numeric seed based on capacity
+  let s = seed >>> 0;
+  function rand() {
+    // Mulberry32
+    s += 0x6D2B79F5;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rand() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;

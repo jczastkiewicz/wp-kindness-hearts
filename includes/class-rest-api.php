@@ -205,6 +205,15 @@ class KHearts_REST_API
             return new WP_Error('not_found', 'Class not found', ['status' => 404]);
         }
 
+        // Simple per-IP rate limit: 60 taps/minute per IP using WP transients.
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $rl_key = 'khearts_rl_' . md5($ip);
+        $rl_count = (int) get_transient($rl_key);
+        if ($rl_count >= 60) {
+            return new WP_Error('rate_limited', 'Rate limit exceeded', ['status' => 429]);
+        }
+        set_transient($rl_key, $rl_count + 1, MINUTE_IN_SECONDS);
+
         global $wpdb;
 
         // Atomic increment for class points using direct SQL update to avoid
