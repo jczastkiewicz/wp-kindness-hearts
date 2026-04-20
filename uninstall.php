@@ -7,7 +7,9 @@ if (! defined('WP_UNINSTALL_PLUGIN')) {
 
 // Support multisite: run uninstall on each blog if necessary.
 if (function_exists('is_multisite') && is_multisite()) {
-    $blog_ids = array_map(function ($b) { return (int) $b->blog_id; }, get_sites(['fields' => 'ids']));
+    $blog_ids = array_map(function ($b) {
+        return (int) $b->blog_id;
+    }, get_sites(['fields' => 'ids']));
 } else {
     $blog_ids = [get_current_blog_id()];
 }
