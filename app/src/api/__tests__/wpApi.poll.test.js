@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { useTotal } from '../wpApi.js';
 
 // Ensure fetch is stubbed so the hook's initial call resolves
-global.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({ total: 0 }) });
+globalThis.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({ total: 0 }) });
 
 describe('useTotal polling', () => {
   it('sets an interval when pollIntervalMs is provided', () => {
