@@ -2,7 +2,7 @@
 Contributors: jczastkiewicz
 Tags: education, school, gamification, classroom, kindness
 Requires at least: 5.9
-Tested up to: 6.7
+Tested up to: 7.0
 Requires PHP: 8.0
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -88,7 +88,7 @@ No. Classes and points are stored as WordPress custom posts and options with no 
 
 = What happens if I deactivate the plugin? =
 
-The plugin's data (classes and points) remains in the WordPress database. Reactivating the plugin makes everything available again immediately. To remove all data permanently, delete the plugin and then clean up the `kh_class` posts and `kh_*` options from the database.
+The plugin's data (classes and points) remains in the WordPress database. Reactivating the plugin makes everything available again immediately. To remove all data permanently, delete the plugin and then clean up the `khearts_class` posts and `khearts_*` options from the database.
 
 = Can pupils see the admin panel or award points themselves? =
 
