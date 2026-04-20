@@ -66,7 +66,9 @@ export default function TeacherPage() {
       setTimeout(() => setLiveMessage(''), 3000);
     } catch (e) {
       setAddError(e.message);
-      setLiveMessage(e.message);
+      // Keep the live region message distinct from the visible error text to
+      // avoid duplicate getByText matches in tests while still announcing it.
+      setLiveMessage('Error: ' + e.message);
       setTimeout(() => setLiveMessage(''), 4000);
     } finally {
       setAdding(false);
