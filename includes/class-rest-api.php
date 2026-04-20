@@ -113,6 +113,12 @@ class KHearts_REST_API
      * Returns false (→ 401) when no token is provided at all.
      * Returns WP_Error 403 when a token is provided but doesn't match.
      * This lets callers distinguish "missing token" from "wrong token".
+     *
+     * Rationale: returning a different status for "missing" vs "invalid" helps
+     * the teacher app provide a clearer UX (401 → prompt to rescan the QR; 403 →
+     * the token was rejected). This is an explicit design choice to favour a
+     * helpful client error message over obscuring the difference — if you prefer
+     * a single generic response for all failures, we can change this behavior.
      */
     public static function token_permission(WP_REST_Request $request): bool|WP_Error
     {
