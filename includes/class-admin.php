@@ -76,18 +76,18 @@ class KHearts_Admin
             <h1>&#x2764;&#xFE0F; <?php esc_html_e('Kindness Hearts', 'kindness-hearts'); ?></h1>
 
             <!-- ── Stats bar ─────────────────────────────────────────── -->
-            <div id="kh-stats" style="display:flex;gap:20px;margin:16px 0;">
-                <div style="background:#fff3cd;padding:16px 24px;border-radius:8px;min-width:140px;text-align:center;">
+            <div id="kh-stats">
+                <div class="kh-card total">
                     <div style="font-size:2rem;font-weight:700;" id="kh-total-display">&hellip;</div>
                     <div style="color:#555;font-size:.85rem;"><?php esc_html_e('School-wide points', 'kindness-hearts'); ?></div>
                 </div>
-                <div style="background:#d1ecf1;padding:16px 24px;border-radius:8px;min-width:140px;text-align:center;">
+                <div class="kh-card classes">
                     <div style="font-size:2rem;font-weight:700;" id="kh-classes-count">&hellip;</div>
                     <div style="color:#555;font-size:.85rem;"><?php esc_html_e('Classes', 'kindness-hearts'); ?></div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:960px;">
+            <div class="kh-main-grid">
 
                 <!-- ── Classes ─────────────────────────────────────── -->
                 <div style="background:#fff;padding:20px;border:1px solid #ddd;border-radius:8px;">
@@ -121,23 +121,23 @@ class KHearts_Admin
                 </div>
 
                 <!-- ── QR Code ──────────────────────────────────────── -->
-                <div style="background:#fff;padding:20px;border:1px solid #ddd;border-radius:8px;">
+                <div class="kh-card">
                     <h2 style="margin-top:0;"><?php esc_html_e('Teacher App QR Code', 'kindness-hearts'); ?></h2>
                     <p style="color:#555;font-size:.9rem;">
                         <?php esc_html_e('Print this QR code and give it only to teachers.', 'kindness-hearts'); ?>
                     </p>
 
                     <!-- QR renders here -->
-                    <div id="kh-qrcode" style="margin:16px 0;line-height:0;"></div>
+                    <div id="kh-qrcode"></div>
 
-                    <p style="word-break:break-all;font-size:.8rem;color:#666;background:#f9f9f9;padding:8px;border-radius:4px;margin-bottom:12px;">
+                    <p class="kh-small-note">
                         <strong><?php esc_html_e('App URL (scan QR to open teacher app):', 'kindness-hearts'); ?></strong><br>
                         <a href="<?php echo esc_url($teacher_url); ?>" target="_blank">
                             <?php echo esc_html($teacher_url); ?>
                         </a>
                     </p>
 
-                    <p style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+                    <p class="kh-button-row">
                         <button class="button button-primary" id="kh-print-btn">
                             &#x1F5A8;&#xFE0F; <?php esc_html_e('Print poster for teachers', 'kindness-hearts'); ?>
                         </button>
