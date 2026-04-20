@@ -34,7 +34,7 @@ function DefaultRedirect() {
     if (token) {
       return <Navigate to={'/teacher?token=' + encodeURIComponent(token)} replace />;
     }
-  } catch (e) {
+  } catch {
     // ignore and fall back to heart
   }
   return <Navigate to="/heart" replace />;

@@ -70,7 +70,7 @@ class KHearts_Frontend
         header('Content-Type: text/html; charset=UTF-8');
         ?>
 <!DOCTYPE html>
-<html lang="<?php echo esc_attr( str_replace('_', '-', get_locale()) ); ?>">
+<html lang="<?php echo esc_attr(str_replace('_', '-', get_locale())); ?>">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
