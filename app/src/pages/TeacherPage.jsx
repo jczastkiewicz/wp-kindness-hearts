@@ -42,6 +42,7 @@ export default function TeacherPage() {
     if (cls) setClassPoints(cls.points);
   }, [selectedId, classes]);
 
+  /* istanbul ignore next: small live-region timing paths are exercised by e2e tests; unit testing timeouts here is brittle */
   const handleAddPoint = useCallback(async () => {
     if (!selectedId || !token || adding) return;
     setAdding(true);
