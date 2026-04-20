@@ -197,15 +197,42 @@ class KHearts_REST_API
             return new WP_Error('not_found', 'Class not found', ['status' => 404]);
         }
 
-        // Increment class points
-        $class_points = (int) get_post_meta($class_id, '_khearts_points', true);
-        $class_points++;
-        update_post_meta($class_id, '_khearts_points', $class_points);
+        global $wpdb;
 
-        // Increment school total
+        // Atomic increment for class points using direct SQL update to avoid
+        // race conditions on concurrent requests. If the meta row doesn't
+        // exist we fall back to creating it with update_post_meta/add_post_meta.
+        $meta_table = $wpdb->postmeta;
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$meta_table}
+               SET meta_value = CAST(meta_value AS UNSIGNED) + 1
+             WHERE post_id = %d AND meta_key = '_khearts_points'",
+            $class_id
+        ));
+
+        if ($wpdb->rows_affected === 0) {
+            // No existing meta row — initialize to 1
+            update_post_meta($class_id, '_khearts_points', 1);
+        }
+
+        // Re-read the value to return the updated count
+        $class_points = (int) get_post_meta($class_id, '_khearts_points', true);
+
+        // Atomic increment for the school total stored in options table.
+        $options_table = $wpdb->options;
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$options_table}
+               SET option_value = CAST(option_value AS UNSIGNED) + 1
+             WHERE option_name = %s",
+            'khearts_total_points'
+        ));
+
+        if ($wpdb->rows_affected === 0) {
+            // Option didn't exist — create it with initial value 1
+            add_option('khearts_total_points', 1, '', 'no');
+        }
+
         $total = (int) get_option('khearts_total_points', 0);
-        $total++;
-        update_option('khearts_total_points', $total);
 
         return rest_ensure_response([
             'class_id' => $class_id,
