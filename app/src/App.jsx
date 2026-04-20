@@ -25,7 +25,17 @@ export default function App() {
 }
 
 function DefaultRedirect() {
-  // The QR code URL format: /kindness-app/#/teacher?token=...
-  // But if someone lands on just /kindness-app/ send them to the heart display
+  // If a token is provided in the outer query string (e.g. ?token=...), forward
+  // it into the hash-based teacher route so the app boots with the token.
+  // This covers cases where a link rewriter or platform strips the '#' fragment.
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      return <Navigate to={'/teacher?token=' + encodeURIComponent(token)} replace />;
+    }
+  } catch (e) {
+    // ignore and fall back to heart
+  }
   return <Navigate to="/heart" replace />;
 }
