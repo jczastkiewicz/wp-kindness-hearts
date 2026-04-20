@@ -67,11 +67,11 @@ describe('addPoint', () => {
     expect(init.headers['X-KHearts-Token']).toBe('secret');
   });
 
-  it('encodes token in query string', async () => {
+  it('does not encode token in query string (token sent in header only)', async () => {
     mockFetch({ class_id: 1, class_points: 1, total_points: 1 });
     await addPoint(1, 'my token');
     const [fetchUrl] = fetch.mock.calls[0];
-    expect(fetchUrl).toContain('token=my%20token');
+    expect(fetchUrl).not.toContain('token=');
   });
 });
 

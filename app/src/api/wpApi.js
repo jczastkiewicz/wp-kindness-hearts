@@ -44,7 +44,7 @@ export async function fetchClasses() {
  * @returns {Promise<{class_id:number, class_points:number, total_points:number}>}
  */
 export async function addPoint(classId, token) {
-  const res = await fetch(url('/points?token=' + encodeURIComponent(token)), {
+  const res = await fetch(url('/points'), {
     method: 'POST',
     headers: headers(token),
     body: JSON.stringify({ class_id: classId }),

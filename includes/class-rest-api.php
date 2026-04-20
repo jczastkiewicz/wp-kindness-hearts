@@ -158,10 +158,24 @@ class KHearts_REST_API
 
     public static function create_class(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
+        $raw = $request->get_param('name');
+        $name = trim(sanitize_text_field((string) $raw));
+
+        // Validate length and content: non-empty, max 100 chars
+        if ($name === '' || mb_strlen($name) > 100) {
+            return new WP_Error('invalid_name', 'Class name must be between 1 and 100 characters', ['status' => 400]);
+        }
+
+        // Uniqueness: do not allow duplicate class titles
+        $existing = get_page_by_title($name, OBJECT, 'khearts_class');
+        if ($existing) {
+            return new WP_Error('conflict', 'A class with that name already exists', ['status' => 409]);
+        }
+
         $id = wp_insert_post([
             'post_type' => 'khearts_class',
             'post_status' => 'publish',
-            'post_title' => $request->get_param('name'),
+            'post_title' => $name,
         ], true); // pass $wp_error=true so failures return WP_Error, not 0
 
         if (is_wp_error($id)) {
@@ -172,7 +186,7 @@ class KHearts_REST_API
 
         return rest_ensure_response([
             'id' => $id,
-            'name' => $request->get_param('name'),
+            'name' => $name,
             'points' => 0,
         ]);
     }
