@@ -41,9 +41,10 @@ export async function gotoKindnessAdmin(page) {
  */
 export async function extractToken(page) {
   await gotoKindnessAdmin(page);
-  // Fetch the token from the admin-only REST endpoint instead of reading
-  // it from a global injected variable.
-  return page.evaluate(async () => {
+
+  // First attempt: fetch the admin-only token via the REST endpoint using the
+  // page context (this includes cookies and will use the WP nonce if present).
+  const viaRest = await page.evaluate(async () => {
     try {
       const res = await fetch('/wp-json/kindness/v1/token', {
         method: 'GET',
@@ -56,4 +57,18 @@ export async function extractToken(page) {
       return '';
     }
   });
+
+  if (viaRest) return viaRest;
+
+  // Fallback: some environments may still expose the token on the page
+  // (e.g., window.KH.secretToken). Try reading that directly from the page.
+  const viaGlobal = await page.evaluate(() => {
+    try {
+      return window.KH?.secretToken ?? '';
+    } catch (e) {
+      return '';
+    }
+  });
+
+  return viaGlobal || '';
 }
