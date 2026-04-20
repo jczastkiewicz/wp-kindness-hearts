@@ -23,7 +23,12 @@ class KHearts_Frontend
         ]);
     }
 
-    /** Add a WP query var so we can detect the virtual route. */
+    /**
+     * Add a WP query var so we can detect the virtual route.
+     *
+     * @param array<string> $vars
+     * @return array<string>
+     */
     public static function add_query_vars(array $vars): array
     {
         $vars[] = 'kindness_app';
@@ -55,13 +60,18 @@ class KHearts_Frontend
         $css_file = '';
 
         if (file_exists($manifest_path)) {
-            $manifest = json_decode(file_get_contents($manifest_path), true); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-            // Vite uses 'index.html' as entry key when input is index.html
-            $entry_key = isset($manifest['index.html']) ? 'index.html' : 'src/main.jsx';
-            if (isset($manifest[ $entry_key ])) {
-                $entry = $manifest[ $entry_key ];
-                $js_file = $entry['file'] ?? $js_file;
-                $css_file = $entry['css'][0] ?? '';
+            $content = file_get_contents($manifest_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+            if ($content !== false) {
+                $manifest = json_decode($content, true);
+                if (is_array($manifest)) {
+                    // Vite uses 'index.html' as entry key when input is index.html
+                    $entry_key = isset($manifest['index.html']) ? 'index.html' : 'src/main.jsx';
+                    if (isset($manifest[ $entry_key ]) && is_array($manifest[ $entry_key ])) {
+                        $entry = $manifest[ $entry_key ];
+                        $js_file = $entry['file'] ?? $js_file;
+                        $css_file = $entry['css'][0] ?? '';
+                    }
+                }
             }
         }
 
