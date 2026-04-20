@@ -80,7 +80,12 @@ describe('TeacherPage — addPoint flows', () => {
 
   it('announces when adding starts', async () => {
     // Mock addPoint to resolve after a short delay so we can verify the "adding" announcement
-    addPoint.mockImplementationOnce(() => new Promise((resolve) => setTimeout(() => resolve({ class_id: 1, class_points: 2, total_points: 2 }), 50)));
+    addPoint.mockImplementationOnce(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(() => resolve({ class_id: 1, class_points: 2, total_points: 2 }), 50)
+        )
+    );
 
     render(
       <MemoryRouter initialEntries={['/teacher?token=secret']}>
