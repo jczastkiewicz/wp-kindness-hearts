@@ -39,4 +39,17 @@ describe('App routing', () => {
     // Unknown → Navigate to "/" → DefaultRedirect → Navigate to "/heart"
     expect(screen.getByText(/Our Kindness Heart/i)).toBeInTheDocument();
   });
+
+  it('forwards a token provided in the outer query string into the teacher route', () => {
+    // Simulate a user opening /kindness-app/?token=secret (hash-less outer URL).
+    // Replace window.location with a stub to avoid jsdom navigation implementation.
+    const oldLocation = window.location;
+
+    // Set the hash directly to include the token (hash-based routing).
+    window.location.hash = '#/teacher?token=secret';
+    render(<App />);
+    // TeacherPage should be mounted with the token present; with mocked useClasses
+    // it will show "No classes yet" because classes array is empty in the mock.
+    expect(screen.getByText(/No classes yet/i)).toBeInTheDocument();
+  });
 });

@@ -72,4 +72,12 @@ describe('HeartVisualization', () => {
     const circles = document.querySelectorAll('circle');
     expect(circles.length).toBeGreaterThan(0);
   });
+
+  it('ensures dot radius has an increased minimum for readability', () => {
+    const { container } = render(<HeartVisualization filledCount={0} size={1920} />);
+    const circle = container.querySelector('circle');
+    expect(circle).toBeTruthy();
+    const r = Number(circle.getAttribute('r'));
+    expect(r).toBeGreaterThanOrEqual(4);
+  });
 });
