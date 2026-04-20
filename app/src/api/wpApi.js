@@ -18,7 +18,7 @@ function headers(token = null) {
   const h = { 'Content-Type': 'application/json' };
   const { nonce } = getConfig();
   if (nonce) h['X-WP-Nonce'] = nonce;
-  if (token) h['X-KH-Token'] = token;
+  if (token) h['X-KHearts-Token'] = token;
   return h;
 }
 

@@ -208,3 +208,18 @@ body {
 .dot.pop {
   animation: dotPop 0.35s ease forwards;
 }
+
+/* ── Respect the user's reduced-motion preference (WCAG 2.3.3) ────────────
+   Users with a vestibular disorder or who simply prefer less motion get a
+   static UI — no dot pops, no bar animations, no spinner rotation, no
+   feedback-flash flight. Minimal instantaneous transitions only. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -176,7 +176,7 @@ All endpoints are under `/wp-json/kindness/v1/`.
 | POST | `/reset` | WP admin | Resets all points to zero |
 | POST | `/token/regenerate` | WP admin | Generates a new secret token |
 
-The teacher token can be passed as `?token=VALUE` in the query string or as an `X-KH-Token` request header.
+The teacher token can be passed as `?token=VALUE` in the query string or as an `X-KHearts-Token` request header.
 
 ---
 
@@ -418,7 +418,7 @@ The **four spec files** then run in order:
 
 `03-heart.spec.js` — Heart display: page loads without authentication, the canvas renders, the leaderboard lists all classes, and the badge total updates after a point is awarded via the REST API.
 
-`04-security.spec.js` — Token enforcement: no token → 401, wrong token → 403, valid token → 200, token in `X-KH-Token` header works, regenerating the token invalidates the old one, reset zeroes all counters.
+`04-security.spec.js` — Token enforcement: no token → 401, wrong token → 403, valid token → 200, token in `X-KHearts-Token` header works, regenerating the token invalidates the old one, reset zeroes all counters.
 
 ### Run options
 

@@ -90,6 +90,14 @@ class KHearts_REST_API
             'callback' => [self::class, 'regenerate_token'],
             'permission_callback' => [self::class, 'admin_permission'],
         ]);
+
+        // Return current token (admin-only) — used by the admin page to lazily
+        // fetch the teacher QR token instead of embedding it in page HTML.
+        register_rest_route($ns, '/token', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [self::class, 'get_token'],
+            'permission_callback' => [self::class, 'admin_permission'],
+        ]);
     }
 
     // ── Permission callbacks ─────────────────────────────────────────────────
@@ -197,15 +205,51 @@ class KHearts_REST_API
             return new WP_Error('not_found', 'Class not found', ['status' => 404]);
         }
 
-        // Increment class points
-        $class_points = (int) get_post_meta($class_id, '_khearts_points', true);
-        $class_points++;
-        update_post_meta($class_id, '_khearts_points', $class_points);
+        // Simple per-IP rate limit: 60 taps/minute per IP using WP transients.
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $rl_key = 'khearts_rl_' . md5($ip);
+        $rl_count = (int) get_transient($rl_key);
+        if ($rl_count >= 60) {
+            return new WP_Error('rate_limited', 'Rate limit exceeded', ['status' => 429]);
+        }
+        set_transient($rl_key, $rl_count + 1, MINUTE_IN_SECONDS);
 
-        // Increment school total
+        global $wpdb;
+
+        // Atomic increment for class points using direct SQL update to avoid
+        // race conditions on concurrent requests. If the meta row doesn't
+        // exist we fall back to creating it with update_post_meta/add_post_meta.
+        $meta_table = $wpdb->postmeta;
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$meta_table}
+               SET meta_value = CAST(meta_value AS UNSIGNED) + 1
+             WHERE post_id = %d AND meta_key = '_khearts_points'",
+            $class_id
+        ));
+
+        if ($wpdb->rows_affected === 0) {
+            // No existing meta row — initialize to 1
+            update_post_meta($class_id, '_khearts_points', 1);
+        }
+
+        // Re-read the value to return the updated count
+        $class_points = (int) get_post_meta($class_id, '_khearts_points', true);
+
+        // Atomic increment for the school total stored in options table.
+        $options_table = $wpdb->options;
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$options_table}
+               SET option_value = CAST(option_value AS UNSIGNED) + 1
+             WHERE option_name = %s",
+            'khearts_total_points'
+        ));
+
+        if ($wpdb->rows_affected === 0) {
+            // Option didn't exist — create it with initial value 1
+            add_option('khearts_total_points', 1, '', false);
+        }
+
         $total = (int) get_option('khearts_total_points', 0);
-        $total++;
-        update_option('khearts_total_points', $total);
 
         return rest_ensure_response([
             'class_id' => $class_id,
@@ -242,6 +286,18 @@ class KHearts_REST_API
     {
         $token = wp_generate_password(32, false);
         update_option('khearts_secret_token', $token);
+
+        // Do not return the token in the response body — admin UI reloads and
+        // reads the token via wp_localize_script or the /token endpoint.
+        return rest_ensure_response(['success' => true]);
+    }
+
+    public static function get_token(): WP_REST_Response|WP_Error
+    {
+        $token = get_option('khearts_secret_token', '');
+        if (! $token) {
+            return new WP_Error('no_token', 'No token configured', ['status' => 404]);
+        }
 
         return rest_ensure_response(['token' => $token]);
     }

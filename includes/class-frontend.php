@@ -67,10 +67,21 @@ class KHearts_Frontend
 
         $school_name = get_option('khearts_school_name', 'Kindness Hearts');
 
+        // Security headers — this route bypasses the normal WordPress template
+        // stack, so we set them explicitly rather than relying on theme/plugin
+        // filters that would otherwise run.
         header('Content-Type: text/html; charset=UTF-8');
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: SAMEORIGIN');
+        header("Content-Security-Policy: frame-ancestors 'self'");
+        // The teacher URL contains the secret token in the hash fragment (which
+        // browsers don't send) but also sometimes in the query string on the
+        // very first QR scan. Strip referrers so the token cannot leak via
+        // outbound links.
+        header('Referrer-Policy: no-referrer');
         ?>
 <!DOCTYPE html>
-<html lang="<?php echo esc_attr(get_locale()); ?>">
+<html lang="<?php echo esc_attr(str_replace('_', '-', get_locale())); ?>">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -78,6 +89,8 @@ class KHearts_Frontend
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="referrer" content="no-referrer" />
     <title><?php echo esc_html($school_name); ?></title>
     <link rel="manifest" href="<?php echo esc_url($dist_url . 'manifest.json'); ?>" />
     <link rel="icon" href="<?php echo esc_url($dist_url . 'heart-192.png'); ?>" />

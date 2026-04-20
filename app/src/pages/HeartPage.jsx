@@ -121,7 +121,7 @@ export default function HeartPage() {
                     style={{
                       fontSize: '.85rem',
                       fontWeight: 700,
-                      color: i === 0 ? '#e53e3e' : '#a0aec0',
+                      color: i === 0 ? '#e53e3e' : '#4a5568',
                       width: 20,
                       textAlign: 'center',
                     }}
@@ -174,7 +174,7 @@ export default function HeartPage() {
       )}
 
       {/* Auto-refresh note */}
-      <p style={{ color: '#cbd5e0', fontSize: '.75rem', textAlign: 'center' }}>
+      <p style={{ color: '#4a5568', fontSize: '.75rem', textAlign: 'center' }}>
         Auto-refreshes every 10 seconds ↻
       </p>
     </div>

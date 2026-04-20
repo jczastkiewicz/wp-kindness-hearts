@@ -16,7 +16,7 @@ class KHearts_Admin
             'manage_options',
             'kindness-hearts',
             [self::class, 'render_page'],
-            'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#a0aec0" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'),
+            'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#4a5568" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'),
             30
         );
     }
@@ -53,7 +53,6 @@ class KHearts_Admin
                 'restUrl' => esc_url_raw(rest_url('kindness/v1')),
                 'nonce' => wp_create_nonce('wp_rest'),
                 'siteUrl' => site_url(),
-                'secretToken' => get_option('khearts_secret_token', ''),
                 'schoolName' => get_option('khearts_school_name', get_bloginfo('name')),
             ]
         );
@@ -61,9 +60,8 @@ class KHearts_Admin
 
     public static function render_page(): void
     {
-        $token = get_option('khearts_secret_token', '');
         $app_path = site_url('/kindness-app/');
-        $teacher_url = $app_path . '#/teacher?token=' . rawurlencode($token);
+        $teacher_url = $app_path . '#/teacher';
         $heart_url = $app_path . '#/heart';
         ?>
         <div class="wrap" id="kh-admin">
@@ -125,7 +123,7 @@ class KHearts_Admin
                     <div id="kh-qrcode" style="margin:16px 0;line-height:0;"></div>
 
                     <p style="word-break:break-all;font-size:.8rem;color:#666;background:#f9f9f9;padding:8px;border-radius:4px;margin-bottom:12px;">
-                        <strong><?php esc_html_e('App URL:', 'kindness-hearts'); ?></strong><br>
+                        <strong><?php esc_html_e('App URL (scan QR to open teacher app):', 'kindness-hearts'); ?></strong><br>
                         <a href="<?php echo esc_url($teacher_url); ?>" target="_blank">
                             <?php echo esc_html($teacher_url); ?>
                         </a>

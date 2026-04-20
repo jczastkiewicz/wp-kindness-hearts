@@ -18,7 +18,11 @@ export default defineConfig({
       includeAssets: ['heart-192.png', 'heart-512.png', 'favicon.ico'],
       manifest: false, // We provide our own manifest.json in public/
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+        // Exclude index.html from precache because build-plugin.sh and CI exclude it
+        // from the zip. This prevents the service worker install from failing when
+        // index.html is not present in the shipped artifact.
+        globPatterns: ['**/*.{js,css,png,svg,ico}'],
+        globIgnores: ['index.html'],
         runtimeCaching: [
           {
             // Cache WP REST API calls for offline fallback

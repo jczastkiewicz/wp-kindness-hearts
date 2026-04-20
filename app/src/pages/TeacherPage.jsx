@@ -182,7 +182,7 @@ export default function TeacherPage() {
             points in {selectedClass?.name ?? '…'}
           </div>
           {totalPoints !== null && (
-            <div style={{ color: '#a0aec0', fontSize: '.78rem', marginTop: 2 }}>
+            <div style={{ color: '#4a5568', fontSize: '.78rem', marginTop: 2 }}>
               {totalPoints.toLocaleString()} school-wide
             </div>
           )}

@@ -60,11 +60,11 @@ describe('addPoint', () => {
     await expect(addPoint(1, 'tok')).rejects.toThrow('Failed to add point');
   });
 
-  it('sends token in X-KH-Token header', async () => {
+  it('sends token in X-KHearts-Token header', async () => {
     mockFetch({ class_id: 1, class_points: 1, total_points: 1 });
     await addPoint(1, 'secret');
     const [, init] = fetch.mock.calls[0];
-    expect(init.headers['X-KH-Token']).toBe('secret');
+    expect(init.headers['X-KHearts-Token']).toBe('secret');
   });
 
   it('encodes token in query string', async () => {

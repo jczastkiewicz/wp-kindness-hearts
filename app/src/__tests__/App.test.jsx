@@ -39,4 +39,13 @@ describe('App routing', () => {
     // Unknown → Navigate to "/" → DefaultRedirect → Navigate to "/heart"
     expect(screen.getByText(/Our Kindness Heart/i)).toBeInTheDocument();
   });
+
+  it('forwards a token provided in the outer query string into the teacher route', () => {
+    // Simulate opening /kindness-app/?token=secret and landing on root — DefaultRedirect
+    window.history.pushState({}, '', '/?token=secret');
+    window.location.hash = '#/';
+    render(<App />);
+    // With the mocked useClasses (empty) teacher page should show "No classes yet"
+    expect(screen.getByText(/No classes yet/i)).toBeInTheDocument();
+  });
 });

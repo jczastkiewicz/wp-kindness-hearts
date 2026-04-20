@@ -15,7 +15,7 @@
     const api        = KH.restUrl;
     const nonce      = KH.nonce;
     const headers    = { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce };
-    const teacherUrl = KH.siteUrl + '/kindness-app/#/teacher?token=' + encodeURIComponent( KH.secretToken );
+    let teacherUrl    = null; // constructed after fetching admin-only token
     const schoolName = KH.schoolName;
 
     // ── Solid heart SVG as data URL (centre logo) ────────────────────────────
@@ -69,9 +69,35 @@
         return qr;
     }
 
+    let initQrTries = 0;
+    const INIT_QR_MAX = 30;
     function initQR() {
-        if ( typeof QRCodeStyling === 'undefined' ) { setTimeout( initQR, 100 ); return; }
-        qrStyling = buildQR( document.getElementById( 'kh-qrcode' ), 220 );
+        if ( typeof QRCodeStyling === 'undefined' ) {
+            initQrTries++;
+            if (initQrTries > INIT_QR_MAX) {
+                const el = document.getElementById('kh-qrcode');
+                el.innerHTML = '<div style="color:#c0392b;">QR library failed to load — please check your connection.</div>';
+                return;
+            }
+            setTimeout( initQR, 100 );
+            return;
+        }
+        // Fetch the admin-only secret token lazily and then build the QR using it.
+        fetch( api + '/token', { method: 'GET', headers: { 'X-WP-Nonce': nonce } } )
+            .then( r => {
+                if (! r.ok) throw new Error('Failed to fetch token');
+                return r.json();
+            } )
+            .then( data => {
+                teacherUrl = KH.siteUrl + '/kindness-app/#/teacher?token=' + encodeURIComponent( data.token );
+                qrStyling = buildQR( document.getElementById( 'kh-qrcode' ), 220 );
+            } )
+            .catch( e => {
+                // If token fetch fails show an explanatory message in the QR area.
+                const el = document.getElementById('kh-qrcode');
+                el.innerHTML = '<div style="color:#c0392b;">Unable to load teacher QR token.</div>';
+                console.error(e);
+            });
     }
     initQR();
 
@@ -95,13 +121,25 @@
             qrOptions:            { errorCorrectionLevel: 'H' },
         } );
         tmpQR.append( tmp );
-        // Wait for image to load inside the QR library
-        setTimeout( () => {
+        // Poll for the canvas element instead of relying on a fixed timeout.
+        let tries = 0;
+        const maxTries = 20; // ~2s at 100ms interval
+        const iv = setInterval(() => {
             const canvas = tmp.querySelector( 'canvas' );
-            const dataUrl = canvas ? canvas.toDataURL( 'image/png' ) : '';
-            document.body.removeChild( tmp );
-            callback( dataUrl );
-        }, 600 );
+            if (canvas) {
+                const dataUrl = canvas.toDataURL( 'image/png' );
+                clearInterval(iv);
+                document.body.removeChild( tmp );
+                callback(dataUrl);
+                return;
+            }
+            tries++;
+            if (tries >= maxTries) {
+                clearInterval(iv);
+                document.body.removeChild( tmp );
+                callback('');
+            }
+        }, 100);
     }
 
     // ── Download PNG ─────────────────────────────────────────────────────────

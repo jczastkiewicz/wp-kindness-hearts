@@ -41,5 +41,19 @@ export async function gotoKindnessAdmin(page) {
  */
 export async function extractToken(page) {
   await gotoKindnessAdmin(page);
-  return page.evaluate(() => window.KH?.secretToken ?? '');
+  // Fetch the token from the admin-only REST endpoint instead of reading
+  // it from a global injected variable.
+  return page.evaluate(async () => {
+    try {
+      const res = await fetch('/wp-json/kindness/v1/token', {
+        method: 'GET',
+        headers: { 'X-WP-Nonce': window.KH?.nonce ?? '' },
+      });
+      if (!res.ok) return '';
+      const data = await res.json();
+      return data.token ?? '';
+    } catch (e) {
+      return '';
+    }
+  });
 }

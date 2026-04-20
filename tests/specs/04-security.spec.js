@@ -91,11 +91,8 @@ test.describe('Token regeneration', () => {
     await page.click('#kh-regen-token-btn');
     await navigationPromise;
 
-    // Wait for WordPress to re-inject window.KH into the reloaded page
-    await page.waitForFunction(
-      () => typeof window.KH?.secretToken === 'string' && window.KH.secretToken.length > 0,
-      { timeout: 10_000 }
-    );
+    // Wait for the admin page to reload and be interactive again
+    await page.waitForSelector('#kh-classes-body', { timeout: 10_000 });
 
     // Old token should now be rejected
     const classesRes = await request.get(`${API}/classes`);
@@ -107,8 +104,17 @@ test.describe('Token regeneration', () => {
     });
     expect(res.status()).toBe(403);
 
-    // New token is available in window.KH and should work
-    const newToken = await page.evaluate(() => window.KH.secretToken);
+    // Fetch the new token from the admin-only endpoint
+    const newToken = await page.evaluate(async () => {
+      const r = await fetch('/wp-json/kindness/v1/token', {
+        method: 'GET',
+        headers: { 'X-WP-Nonce': window.KH?.nonce ?? '' },
+      });
+      if (!r.ok) return '';
+      const j = await r.json();
+      return j.token ?? '';
+    });
+
     expect(newToken).toBeTruthy();
     expect(newToken).not.toBe(oldToken);
 
