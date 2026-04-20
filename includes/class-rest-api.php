@@ -6,8 +6,9 @@
  *   GET  /kindness/v1/classes          – list all classes with point counts
  *   GET  /kindness/v1/total            – school-wide total
  *
- * Token-protected endpoints (require ?token=SECRET or X-KH-Token header):
+ * Token-protected endpoints (require ?token=SECRET or X-KHearts-Token header):
  *   POST /kindness/v1/points           – add a point to a class
+ *     (token may alternatively be sent as X-KHearts-Token header)
  *
  * WP-admin only:
  *   POST /kindness/v1/classes          – create a class
@@ -18,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class KH_REST_API {
+class KHearts_REST_API {
 
     public static function register_routes(): void {
         $ns = 'kindness/v1';
@@ -28,6 +29,8 @@ class KH_REST_API {
             [
                 'methods'             => WP_REST_Server::READABLE,
                 'callback'            => [ self::class, 'get_classes' ],
+                // Intentionally public — read-only list of class names and points,
+                // the same data displayed on the public heart screen.
                 'permission_callback' => '__return_true',
             ],
             [
@@ -68,6 +71,7 @@ class KH_REST_API {
         register_rest_route( $ns, '/total', [
             'methods'             => WP_REST_Server::READABLE,
             'callback'            => [ self::class, 'get_total' ],
+            // Intentionally public — aggregate point count shown on the public heart display.
             'permission_callback' => '__return_true',
         ] );
 
@@ -93,19 +97,19 @@ class KH_REST_API {
     }
 
     /**
-     * Token can be passed as ?token=... query param OR X-KH-Token header.
+     * Token can be passed as ?token=... query param OR X-KHearts-Token header.
      *
      * Returns false (→ 401) when no token is provided at all.
      * Returns WP_Error 403 when a token is provided but doesn't match.
      * This lets callers distinguish "missing token" from "wrong token".
      */
     public static function token_permission( WP_REST_Request $request ): bool|WP_Error {
-        $stored = get_option( 'kh_secret_token', '' );
+        $stored = get_option( 'khearts_secret_token', '' );
         if ( ! $stored ) {
             return new WP_Error( 'no_token_configured', 'No token configured', [ 'status' => 403 ] );
         }
         $provided = $request->get_param( 'token' )
-                    ?? $request->get_header( 'X-KH-Token' )
+                    ?? $request->get_header( 'X-KHearts-Token' )
                     ?? '';
         if ( ! $provided ) {
             return false; // No token at all → WordPress returns 401
@@ -120,7 +124,7 @@ class KH_REST_API {
 
     public static function get_classes(): WP_REST_Response|WP_Error {
         $posts = get_posts( [
-            'post_type'      => 'kh_class',
+            'post_type'      => 'khearts_class',
             'post_status'    => 'publish',
             'posts_per_page' => -1,
             'orderby'        => 'title',
@@ -131,7 +135,7 @@ class KH_REST_API {
             return [
                 'id'     => $p->ID,
                 'name'   => $p->post_title,
-                'points' => (int) get_post_meta( $p->ID, '_kh_points', true ),
+                'points' => (int) get_post_meta( $p->ID, '_khearts_points', true ),
             ];
         }, $posts );
 
@@ -140,7 +144,7 @@ class KH_REST_API {
 
     public static function create_class( WP_REST_Request $request ): WP_REST_Response|WP_Error {
         $id = wp_insert_post( [
-            'post_type'   => 'kh_class',
+            'post_type'   => 'khearts_class',
             'post_status' => 'publish',
             'post_title'  => $request->get_param( 'name' ),
         ], true ); // pass $wp_error=true so failures return WP_Error, not 0
@@ -149,7 +153,7 @@ class KH_REST_API {
             return $id;
         }
 
-        update_post_meta( $id, '_kh_points', 0 );
+        update_post_meta( $id, '_khearts_points', 0 );
 
         return rest_ensure_response( [
             'id'     => $id,
@@ -162,16 +166,16 @@ class KH_REST_API {
         $id   = (int) $request->get_param( 'id' );
         $post = get_post( $id );
 
-        if ( ! $post || $post->post_type !== 'kh_class' ) {
+        if ( ! $post || $post->post_type !== 'khearts_class' ) {
             return new WP_Error( 'not_found', 'Class not found', [ 'status' => 404 ] );
         }
 
-        $points = (int) get_post_meta( $id, '_kh_points', true );
+        $points = (int) get_post_meta( $id, '_khearts_points', true );
         wp_delete_post( $id, true );
 
         // Subtract from school total
-        $total = (int) get_option( 'kh_total_points', 0 );
-        update_option( 'kh_total_points', max( 0, $total - $points ) );
+        $total = (int) get_option( 'khearts_total_points', 0 );
+        update_option( 'khearts_total_points', max( 0, $total - $points ) );
 
         return rest_ensure_response( [ 'deleted' => true, 'id' => $id ] );
     }
@@ -180,19 +184,19 @@ class KH_REST_API {
         $class_id = $request->get_param( 'class_id' );
         $post     = get_post( $class_id );
 
-        if ( ! $post || $post->post_type !== 'kh_class' ) {
+        if ( ! $post || $post->post_type !== 'khearts_class' ) {
             return new WP_Error( 'not_found', 'Class not found', [ 'status' => 404 ] );
         }
 
         // Increment class points
-        $class_points = (int) get_post_meta( $class_id, '_kh_points', true );
+        $class_points = (int) get_post_meta( $class_id, '_khearts_points', true );
         $class_points++;
-        update_post_meta( $class_id, '_kh_points', $class_points );
+        update_post_meta( $class_id, '_khearts_points', $class_points );
 
         // Increment school total
-        $total = (int) get_option( 'kh_total_points', 0 );
+        $total = (int) get_option( 'khearts_total_points', 0 );
         $total++;
-        update_option( 'kh_total_points', $total );
+        update_option( 'khearts_total_points', $total );
 
         return rest_ensure_response( [
             'class_id'     => $class_id,
@@ -203,21 +207,21 @@ class KH_REST_API {
 
     public static function get_total(): WP_REST_Response|WP_Error {
         return rest_ensure_response( [
-            'total' => (int) get_option( 'kh_total_points', 0 ),
+            'total' => (int) get_option( 'khearts_total_points', 0 ),
         ] );
     }
 
     public static function reset_all(): WP_REST_Response|WP_Error {
-        update_option( 'kh_total_points', 0 );
+        update_option( 'khearts_total_points', 0 );
 
         $posts = get_posts( [
-            'post_type'      => 'kh_class',
+            'post_type'      => 'khearts_class',
             'post_status'    => 'publish',
             'posts_per_page' => -1,
         ] );
 
         foreach ( $posts as $p ) {
-            update_post_meta( $p->ID, '_kh_points', 0 );
+            update_post_meta( $p->ID, '_khearts_points', 0 );
         }
 
         return rest_ensure_response( [ 'reset' => true ] );
@@ -225,7 +229,7 @@ class KH_REST_API {
 
     public static function regenerate_token(): WP_REST_Response|WP_Error {
         $token = wp_generate_password( 32, false );
-        update_option( 'kh_secret_token', $token );
+        update_option( 'khearts_secret_token', $token );
 
         return rest_ensure_response( [ 'token' => $token ] );
     }
