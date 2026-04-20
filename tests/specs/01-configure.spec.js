@@ -53,9 +53,11 @@ test.describe('Admin – configure classes', () => {
   });
 
   // ── App URL link ─────────────────────────────────────────────────────────────
-  test('teacher URL link is present and contains the token', async ({ page }) => {
+  test('teacher URL link is present (token is not embedded in HTML)', async ({ page }) => {
     const href = await page.locator('a[href*="#/teacher"]').getAttribute('href');
-    expect(href).toMatch(/token=[A-Za-z0-9]{16,}/);
+    expect(href).toContain('#/teacher');
+    // Token should not be embedded in the admin page HTML
+    expect(href).not.toMatch(/token=/);
   });
 
   // ── Delete the test class ───────────────────────────────────────────────────
