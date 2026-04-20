@@ -229,7 +229,7 @@ class KHearts_REST_API
 
         if ($wpdb->rows_affected === 0) {
             // Option didn't exist — create it with initial value 1
-            add_option('khearts_total_points', 1, '', 'no');
+            add_option('khearts_total_points', 1, '', false);
         }
 
         $total = (int) get_option('khearts_total_points', 0);
