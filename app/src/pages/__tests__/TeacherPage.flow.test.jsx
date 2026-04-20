@@ -50,6 +50,10 @@ describe('TeacherPage — addPoint flows', () => {
 
     // Flash emoji should appear briefly (feedback-flash element)
     expect(document.querySelector('.feedback-flash')).toBeInTheDocument();
+
+    // Live region should announce the addition
+    const live = screen.getByRole('status');
+    await waitFor(() => expect(live).toHaveTextContent(/Added a point/i));
   });
 
   it('shows an error message when addPoint fails', async () => {
@@ -68,5 +72,9 @@ describe('TeacherPage — addPoint flows', () => {
 
     // Expect error container to show the message
     await waitFor(() => expect(screen.getByText(/Invalid token/i)).toBeInTheDocument());
+
+    // Live region should announce a generic error message (not duplicate the visible text)
+    const live = screen.getByRole('status');
+    await waitFor(() => expect(live).toHaveTextContent(/An error occurred/i));
   });
 });
