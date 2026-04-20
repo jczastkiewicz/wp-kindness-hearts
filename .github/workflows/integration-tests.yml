@@ -40,13 +40,14 @@ jobs:
             --include \
               "wp-kindness-hearts/wp-kindness-hearts.php" \
               "wp-kindness-hearts/includes/*.php" \
+              "wp-kindness-hearts/assets/js/*" \
               "wp-kindness-hearts/app/dist/*" \
               "wp-kindness-hearts/app/dist/**/*" \
               "wp-kindness-hearts/app/dist/.vite/*" \
               "wp-kindness-hearts/app/public/heart-192.png" \
               "wp-kindness-hearts/app/public/heart-512.png" \
               "wp-kindness-hearts/app/public/manifest.json" \
-            -x "*.DS_Store" -x "*__MACOSX*"
+            -x "*.DS_Store" -x "*__MACOSX*" -x "*/app/dist/index.html"
           echo "Zip size: $(du -sh wp-kindness-hearts/wp-kindness-hearts.zip)"
 
       # ── 4. Start clean WordPress ──────────────────────────────────────────────

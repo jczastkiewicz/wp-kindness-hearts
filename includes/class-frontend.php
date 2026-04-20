@@ -8,17 +8,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class KH_Frontend {
+class KHearts_Frontend {
 
-    /** Register the kindness_class CPT (lightweight, no public archive needed). */
+    /** Register the khearts_class CPT (lightweight, no public archive needed). */
     public static function register_cpt(): void {
-        register_post_type( 'kh_class', [
-            'label'               => __( 'Kindness Class', 'kindness-hearts' ),
-            'public'              => false,
-            'show_ui'             => false,
-            'show_in_rest'        => false, // We expose via our own REST routes
-            'supports'            => [ 'title' ],
-            'rewrite'             => false,
+        register_post_type( 'khearts_class', [
+            'label'        => __( 'Kindness Class', 'kindness-hearts' ),
+            'public'       => false,
+            'show_ui'      => false,
+            'show_in_rest' => false, // We expose via our own REST routes
+            'supports'     => [ 'title' ],
+            'rewrite'      => false,
         ] );
     }
 
@@ -42,22 +42,15 @@ class KH_Frontend {
             return;
         }
 
-        $dist_url = KH_APP_URL;
+        $dist_url = KHEARTS_APP_URL;
 
-        // Inject WP config for the React app
-        $wp_config = wp_json_encode( [
-            'restUrl'    => esc_url_raw( rest_url( 'kindness/v1' ) ),
-            'nonce'      => wp_create_nonce( 'wp_rest' ),
-            'siteUrl'    => site_url(),
-        ] );
-
-        // Read Vite manifest to get correct hashed asset filenames
-        $manifest_path = KH_PLUGIN_DIR . 'app/dist/.vite/manifest.json';
+        // Read Vite manifest to get correct hashed asset filenames.
+        $manifest_path = KHEARTS_PLUGIN_DIR . 'app/dist/.vite/manifest.json';
         $js_file  = 'assets/index.js';
         $css_file = '';
 
         if ( file_exists( $manifest_path ) ) {
-            $manifest = json_decode( file_get_contents( $manifest_path ), true );
+            $manifest = json_decode( file_get_contents( $manifest_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
             // Vite uses 'index.html' as entry key when input is index.html
             $entry_key = isset( $manifest['index.html'] ) ? 'index.html' : 'src/main.jsx';
             if ( isset( $manifest[ $entry_key ] ) ) {
@@ -66,6 +59,8 @@ class KH_Frontend {
                 $css_file = $entry['css'][0] ?? '';
             }
         }
+
+        $school_name = get_option( 'khearts_school_name', 'Kindness Hearts' );
 
         header( 'Content-Type: text/html; charset=UTF-8' );
         ?>
@@ -78,7 +73,7 @@ class KH_Frontend {
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <title><?php echo esc_html( get_option( 'kh_school_name', 'Kindness Hearts' ) ); ?></title>
+    <title><?php echo esc_html( $school_name ); ?></title>
     <link rel="manifest" href="<?php echo esc_url( $dist_url . 'manifest.json' ); ?>" />
     <link rel="icon" href="<?php echo esc_url( $dist_url . 'heart-192.png' ); ?>" />
     <?php if ( $css_file ) : ?>
@@ -87,7 +82,7 @@ class KH_Frontend {
 </head>
 <body>
     <div id="root"></div>
-    <script>window.WP_CONFIG = <?php echo $wp_config; ?>;</script>
+    <script>window.WP_CONFIG = <?php echo wp_json_encode( [ 'restUrl' => esc_url_raw( rest_url( 'kindness/v1' ) ), 'nonce' => wp_create_nonce( 'wp_rest' ), 'siteUrl' => site_url() ] ); ?>;</script>
     <script type="module" src="<?php echo esc_url( $dist_url . $js_file ); ?>"></script>
 </body>
 </html>

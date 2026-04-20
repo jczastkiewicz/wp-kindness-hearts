@@ -67,7 +67,7 @@ test.describe('Token enforcement (REST API)', () => {
     const classes    = await classesRes.json();
 
     const res = await request.post(`${API}/points`, {
-      headers: { 'X-KH-Token': token },
+      headers: { 'X-KHearts-Token': token },
       data:    { class_id: classes[0].id },
     });
     expect(res.status()).toBe(200);
