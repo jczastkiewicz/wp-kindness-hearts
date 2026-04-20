@@ -17,7 +17,14 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
 
   // ── Stable random order for filling dots (seeded by capacity so order is
   // stable across reloads) ───────────────────────────────────────────────
-  const fillOrder = useMemo(() => seededShuffle(positions.map((_, i) => i), capacity), [positions, capacity]);
+  const fillOrder = useMemo(
+    () =>
+      seededShuffle(
+        positions.map((_, i) => i),
+        capacity
+      ),
+    [positions, capacity]
+  );
 
   // ── Track which dots are "popping" (newly filled) ────────────────────────
   const prevFilledRef = useRef(0);
@@ -157,7 +164,7 @@ function seededShuffle(arr, seed) {
   let s = seed >>> 0;
   function rand() {
     // Mulberry32
-    s += 0x6D2B79F5;
+    s += 0x6d2b79f5;
     let t = Math.imul(s ^ (s >>> 15), 1 | s);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
