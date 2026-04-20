@@ -19,7 +19,7 @@ services:
 
   # ── WordPress ─────────────────────────────────────────────────────────────
   wordpress:
-    image: wordpress:latest
+    image: wordpress:6.5-apache
     restart: unless-stopped
     depends_on:
       db:
@@ -67,7 +67,7 @@ services:
 
   # ── phpMyAdmin (optional DB browser) ─────────────────────────────────────
   phpmyadmin:
-    image: phpmyadmin:latest
+    image: phpmyadmin:5.3.0
     restart: unless-stopped
     depends_on:
       - db

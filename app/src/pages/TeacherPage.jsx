@@ -81,7 +81,9 @@ export default function TeacherPage() {
     return (
       <div className="full-page" style={{ justifyContent: 'center', padding: 32 }}>
         <div className="card" style={{ maxWidth: 360, textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: 16 }}>🔑</div>
+          <div style={{ fontSize: '3rem', marginBottom: 16 }}>
+            <span aria-hidden="true">🔑</span>
+          </div>
           <h2 style={{ color: '#c0392b', marginBottom: 8 }}>Access required</h2>
           <p style={{ color: '#718096' }}>
             Please scan the QR code provided by your school administrator to open the teacher app.
@@ -105,7 +107,9 @@ export default function TeacherPage() {
     return (
       <div className="full-page" style={{ justifyContent: 'center', padding: 32 }}>
         <div className="card" style={{ maxWidth: 360, textAlign: 'center' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>⚠️</div>
+          <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>
+            <span aria-hidden="true">⚠️</span>
+          </div>
           <p style={{ color: '#c0392b' }}>{loadError}</p>
         </div>
       </div>
@@ -117,7 +121,9 @@ export default function TeacherPage() {
     return (
       <div className="full-page" style={{ justifyContent: 'center', padding: 32 }}>
         <div className="card" style={{ maxWidth: 360, textAlign: 'center' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🏫</div>
+          <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>
+            <span aria-hidden="true">🏫</span>
+          </div>
           <h2 style={{ marginBottom: 8 }}>No classes yet</h2>
           <p style={{ color: '#718096' }}>
             Ask the administrator to add classes in the WordPress admin panel first.
@@ -140,7 +146,11 @@ export default function TeacherPage() {
       }}
     >
       {/* Flash feedback */}
-      {flash && <div className="feedback-flash">❤️</div>}
+      {flash && (
+        <div className="feedback-flash">
+          <span aria-hidden="true">❤️</span>
+        </div>
+      )}
 
       {/* Accessible live region for screen readers (visually hidden but announced) */}
       <div
@@ -154,7 +164,9 @@ export default function TeacherPage() {
       <div className="card" style={{ width: '100%', maxWidth: 380, textAlign: 'center' }}>
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: '2.5rem', lineHeight: 1 }}>❤️</div>
+          <div style={{ fontSize: '2.5rem', lineHeight: 1 }}>
+            <span aria-hidden="true">❤️</span>
+          </div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: 8, color: '#c0392b' }}>
             Kindness Points
           </h1>

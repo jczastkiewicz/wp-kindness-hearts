@@ -66,10 +66,10 @@ export default defineConfig({
       include: ['src/**'],
       exclude: ['src/main.jsx'],
       thresholds: {
-        lines: 0,      // raise these as you add unit tests
-        functions: 0,
-        branches: 0,
-        statements: 0,
+        lines: 60,      // project baseline for unit tests
+        functions: 60,
+        branches: 60,
+        statements: 60,
       },
     },
   },

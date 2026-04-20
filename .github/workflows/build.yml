@@ -23,7 +23,10 @@ jobs:
 
       - name: Install dependencies
         working-directory: app
-        run: npm ci
+        # Use npm install in CI to tolerate lockfile format differences across runner/npm versions.
+        # The repo includes a committed package-lock.json; if CI environment supports npm ci reliably,
+        # we can revert this to `npm ci` for stricter installs.
+        run: npm install --no-audit --no-fund
 
       - name: Build React app
         working-directory: app
