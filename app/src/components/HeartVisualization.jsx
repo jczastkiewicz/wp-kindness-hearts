@@ -23,9 +23,9 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
   const [poppingSet, setPoppingSet] = useState(new Set());
 
   useEffect(() => {
-    const prev    = prevFilledRef.current;
+    const prev = prevFilledRef.current;
     const clamped = Math.min(filledCount, capacity);
-    const prevC   = Math.min(prev, capacity);
+    const prevC = Math.min(prev, capacity);
 
     if (clamped > prevC) {
       // New dots just filled in – mark them for the pop animation
@@ -38,11 +38,8 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
     prevFilledRef.current = clamped;
   }, [filledCount, capacity, fillOrder]);
 
-  const clamped    = Math.min(filledCount, capacity);
-  const filledSet  = useMemo(
-    () => new Set(fillOrder.slice(0, clamped)),
-    [fillOrder, clamped]
-  );
+  const clamped = Math.min(filledCount, capacity);
+  const filledSet = useMemo(() => new Set(fillOrder.slice(0, clamped)), [fillOrder, clamped]);
   const pct = capacity > 0 ? Math.round((clamped / capacity) * 100) : 0;
 
   const dotR = getDotRadius(size);
@@ -58,7 +55,7 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
         aria-label={`Heart made of dots: ${clamped} of ${capacity} filled (${pct}%)`}
       >
         {positions.map((pos, idx) => {
-          const filled  = filledSet.has(idx);
+          const filled = filledSet.has(idx);
           const popping = poppingSet.has(idx);
           return (
             <circle
@@ -81,11 +78,13 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
 
       {/* Progress label */}
       <div style={{ textAlign: 'center' }}>
-        <span style={{
-          fontSize: '1.5rem',
-          fontWeight: 700,
-          color: '#e53e3e',
-        }}>
+        <span
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
+            color: '#e53e3e',
+          }}
+        >
           {clamped.toLocaleString()}
         </span>
         <span style={{ color: '#718096', fontSize: '.9rem', marginLeft: 6 }}>
@@ -106,10 +105,10 @@ export default function HeartVisualization({ filledCount = 0, size = 340 }) {
  * with x ∈ [-1.2, 1.2], y ∈ [-1.3, 1.0] (flipped for screen coords).
  */
 function buildHeartGrid(size) {
-  const dotR    = getDotRadius(size);
+  const dotR = getDotRadius(size);
   const spacing = dotR * 2 + dotR * 0.8; // diameter + generous gap = clearly separate dots
-  const cols    = Math.floor(size / spacing);
-  const rows    = Math.floor(size / spacing);
+  const cols = Math.floor(size / spacing);
+  const rows = Math.floor(size / spacing);
   const offsetX = (size - cols * spacing) / 2 + dotR;
   const offsetY = (size - rows * spacing) / 2 + dotR;
 
@@ -123,8 +122,8 @@ function buildHeartGrid(size) {
 
       // Normalize to [-1.3, 1.3] × [-1.25, 1.5]
       // Push ny ceiling higher to show more of the top bumps
-      const nx =  ((px / size) * 2.6) - 1.3;
-      const ny = -((py / size) * 2.75) + 1.5;   // flip Y so heart is right-way up
+      const nx = (px / size) * 2.6 - 1.3;
+      const ny = -((py / size) * 2.75) + 1.5; // flip Y so heart is right-way up
 
       if (isInsideHeart(nx, ny)) {
         positions.push({ x: px, y: py });

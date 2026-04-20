@@ -16,16 +16,16 @@ import { useClasses, addPoint } from '../api/wpApi.js';
  *   - Error display on token failure
  */
 export default function TeacherPage() {
-  const [searchParams]                = useSearchParams();
-  const token                         = searchParams.get('token') || '';
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token') || '';
   const { classes, loading, error: loadError } = useClasses();
 
-  const [selectedId,   setSelectedId]  = useState('');
-  const [classPoints,  setClassPoints] = useState(null);
-  const [totalPoints,  setTotalPoints] = useState(null);
-  const [adding,       setAdding]      = useState(false);
-  const [flash,        setFlash]       = useState(false);
-  const [addError,     setAddError]    = useState(null);
+  const [selectedId, setSelectedId] = useState('');
+  const [classPoints, setClassPoints] = useState(null);
+  const [totalPoints, setTotalPoints] = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [flash, setFlash] = useState(false);
+  const [addError, setAddError] = useState(null);
 
   // Auto-select first class when classes load
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function TeacherPage() {
   // Sync displayed points when selection changes
   useEffect(() => {
     if (!selectedId) return;
-    const cls = classes.find(c => String(c.id) === selectedId);
+    const cls = classes.find((c) => String(c.id) === selectedId);
     if (cls) setClassPoints(cls.points);
   }, [selectedId, classes]);
 
@@ -110,7 +110,7 @@ export default function TeacherPage() {
     );
   }
 
-  const selectedClass = classes.find(c => String(c.id) === selectedId);
+  const selectedClass = classes.find((c) => String(c.id) === selectedId);
   const displayPoints = classPoints ?? selectedClass?.points ?? 0;
 
   return (
@@ -123,9 +123,7 @@ export default function TeacherPage() {
       }}
     >
       {/* Flash feedback */}
-      {flash && (
-        <div className="feedback-flash">❤️</div>
-      )}
+      {flash && <div className="feedback-flash">❤️</div>}
 
       <div className="card" style={{ width: '100%', maxWidth: 380, textAlign: 'center' }}>
         {/* Header */}
@@ -141,18 +139,26 @@ export default function TeacherPage() {
 
         {/* Class selector */}
         <div style={{ marginBottom: 24, textAlign: 'left' }}>
-          <label style={{ display: 'block', fontWeight: 600, marginBottom: 6, fontSize: '.9rem', color: '#4a5568' }}>
+          <label
+            style={{
+              display: 'block',
+              fontWeight: 600,
+              marginBottom: 6,
+              fontSize: '.9rem',
+              color: '#4a5568',
+            }}
+          >
             Select class
           </label>
           <select
             className="kh-select"
             value={selectedId}
-            onChange={e => {
+            onChange={(e) => {
               setSelectedId(e.target.value);
               setAddError(null);
             }}
           >
-            {classes.map(c => (
+            {classes.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
@@ -161,12 +167,14 @@ export default function TeacherPage() {
         </div>
 
         {/* Points display */}
-        <div style={{
-          background: '#fff5f5',
-          borderRadius: 12,
-          padding: '12px 0',
-          marginBottom: 28,
-        }}>
+        <div
+          style={{
+            background: '#fff5f5',
+            borderRadius: 12,
+            padding: '12px 0',
+            marginBottom: 28,
+          }}
+        >
           <div style={{ fontSize: '2.8rem', fontWeight: 800, color: '#e53e3e', lineHeight: 1 }}>
             {displayPoints.toLocaleString()}
           </div>
@@ -198,15 +206,17 @@ export default function TeacherPage() {
 
         {/* Error */}
         {addError && (
-          <div style={{
-            marginTop: 16,
-            padding: '10px 14px',
-            background: '#fff5f5',
-            border: '1px solid #feb2b2',
-            borderRadius: 8,
-            color: '#c53030',
-            fontSize: '.88rem',
-          }}>
+          <div
+            style={{
+              marginTop: 16,
+              padding: '10px 14px',
+              background: '#fff5f5',
+              border: '1px solid #feb2b2',
+              borderRadius: 8,
+              color: '#c53030',
+              fontSize: '.88rem',
+            }}
+          >
             {addError}
           </div>
         )}

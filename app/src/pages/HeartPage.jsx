@@ -12,20 +12,24 @@ import HeartVisualization from '../components/HeartVisualization.jsx';
  *   - A table of classes with their individual scores
  */
 export default function HeartPage() {
-  const { total,   loading: loadingTotal   } = useTotal(10_000);
+  const { total, loading: loadingTotal } = useTotal(10_000);
   const { classes, loading: loadingClasses } = useClasses();
 
   // Sorted classes – highest points first
-  const sorted = useMemo(
-    () => [...classes].sort((a, b) => b.points - a.points),
-    [classes]
-  );
+  const sorted = useMemo(() => [...classes].sort((a, b) => b.points - a.points), [classes]);
 
   const loading = loadingTotal && loadingClasses;
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        style={{
+          minHeight: '100dvh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <div className="spinner" />
       </div>
     );
@@ -45,12 +49,14 @@ export default function HeartPage() {
     >
       {/* Title */}
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{
-          fontSize: 'clamp(1.6rem, 5vw, 3rem)',
-          fontWeight: 800,
-          color: '#c0392b',
-          lineHeight: 1.1,
-        }}>
+        <h1
+          style={{
+            fontSize: 'clamp(1.6rem, 5vw, 3rem)',
+            fontWeight: 800,
+            color: '#c0392b',
+            lineHeight: 1.1,
+          }}
+        >
           Our Kindness Heart ❤️
         </h1>
         <p style={{ color: '#718096', marginTop: 8, fontSize: 'clamp(.85rem, 2vw, 1.05rem)' }}>
@@ -60,22 +66,21 @@ export default function HeartPage() {
 
       {/* Heart visualization */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-        <HeartVisualization
-          filledCount={total}
-          size={Math.min(560, window.innerWidth - 32)}
-        />
+        <HeartVisualization filledCount={total} size={Math.min(560, window.innerWidth - 32)} />
 
         {/* Grand total badge */}
-        <div style={{
-          background: '#e53e3e',
-          color: '#fff',
-          borderRadius: 999,
-          padding: '8px 24px',
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          boxShadow: '0 4px 16px rgba(229,62,62,.35)',
-          marginTop: 4,
-        }}>
+        <div
+          style={{
+            background: '#e53e3e',
+            color: '#fff',
+            borderRadius: 999,
+            padding: '8px 24px',
+            fontSize: '1.2rem',
+            fontWeight: 700,
+            boxShadow: '0 4px 16px rgba(229,62,62,.35)',
+            marginTop: 4,
+          }}
+        >
           {total.toLocaleString()} {total === 1 ? 'point' : 'points'} school-wide!
         </div>
       </div>
@@ -83,13 +88,15 @@ export default function HeartPage() {
       {/* Per-class leaderboard */}
       {sorted.length > 0 && (
         <div style={{ width: '100%', maxWidth: 480 }}>
-          <h2 style={{
-            textAlign: 'center',
-            fontSize: '1.1rem',
-            color: '#4a5568',
-            marginBottom: 12,
-            fontWeight: 600,
-          }}>
+          <h2
+            style={{
+              textAlign: 'center',
+              fontSize: '1.1rem',
+              color: '#4a5568',
+              marginBottom: 12,
+              fontWeight: 600,
+            }}
+          >
             Classes
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -110,13 +117,15 @@ export default function HeartPage() {
                   }}
                 >
                   {/* Rank */}
-                  <span style={{
-                    fontSize: '.85rem',
-                    fontWeight: 700,
-                    color: i === 0 ? '#e53e3e' : '#a0aec0',
-                    width: 20,
-                    textAlign: 'center',
-                  }}>
+                  <span
+                    style={{
+                      fontSize: '.85rem',
+                      fontWeight: 700,
+                      color: i === 0 ? '#e53e3e' : '#a0aec0',
+                      width: 20,
+                      textAlign: 'center',
+                    }}
+                  >
                     {i === 0 ? '🏆' : `#${i + 1}`}
                   </span>
 
@@ -125,30 +134,36 @@ export default function HeartPage() {
                     <div style={{ fontWeight: 600, fontSize: '.95rem', marginBottom: 4 }}>
                       {cls.name}
                     </div>
-                    <div style={{
-                      height: 6,
-                      background: '#fed7d7',
-                      borderRadius: 3,
-                      overflow: 'hidden',
-                    }}>
-                      <div style={{
-                        height: '100%',
-                        width: `${pct}%`,
-                        background: '#e53e3e',
+                    <div
+                      style={{
+                        height: 6,
+                        background: '#fed7d7',
                         borderRadius: 3,
-                        transition: 'width .6s ease',
-                      }} />
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: '100%',
+                          width: `${pct}%`,
+                          background: '#e53e3e',
+                          borderRadius: 3,
+                          transition: 'width .6s ease',
+                        }}
+                      />
                     </div>
                   </div>
 
                   {/* Points */}
-                  <span style={{
-                    fontWeight: 700,
-                    fontSize: '1rem',
-                    color: '#e53e3e',
-                    minWidth: 36,
-                    textAlign: 'right',
-                  }}>
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: '1rem',
+                      color: '#e53e3e',
+                      minWidth: 36,
+                      textAlign: 'right',
+                    }}
+                  >
                     {cls.points}
                   </span>
                 </div>

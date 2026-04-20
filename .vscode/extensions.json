@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    // Formatters
+    "esbenp.prettier-vscode",
+    "junstyle.php-cs-fixer",
+
+    // PHP
+    "bmewburn.vscode-intelephense-client",
+
+    // React / JS
+    "dbaeumer.vscode-eslint",
+
+    // General quality-of-life
+    "editorconfig.editorconfig",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

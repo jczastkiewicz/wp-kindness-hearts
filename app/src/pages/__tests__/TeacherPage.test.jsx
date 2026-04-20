@@ -5,7 +5,7 @@ import TeacherPage from '../TeacherPage.jsx';
 
 vi.mock('../../api/wpApi.js', () => ({
   useClasses: vi.fn(),
-  addPoint:   vi.fn(),
+  addPoint: vi.fn(),
 }));
 
 import { useClasses, addPoint } from '../../api/wpApi.js';
@@ -107,9 +107,7 @@ describe('TeacherPage — main panel', () => {
     addPoint.mockRejectedValue(new Error('Invalid token. Please rescan the QR code.'));
     renderTeacher('badtoken');
     fireEvent.click(screen.getByRole('button', { name: /kindness point/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/Invalid token/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/Invalid token/i)).toBeInTheDocument());
   });
 
   it('clears addError when class selection changes', async () => {

@@ -6,10 +6,12 @@
  */
 
 function getConfig() {
-  return window.WP_CONFIG || {
-    restUrl: '/wp-json/kindness/v1',
-    nonce:   '',
-  };
+  return (
+    window.WP_CONFIG || {
+      restUrl: '/wp-json/kindness/v1',
+      nonce: '',
+    }
+  );
 }
 
 function headers(token = null) {
@@ -43,12 +45,12 @@ export async function fetchClasses() {
  */
 export async function addPoint(classId, token) {
   const res = await fetch(url('/points?token=' + encodeURIComponent(token)), {
-    method:  'POST',
+    method: 'POST',
     headers: headers(token),
-    body:    JSON.stringify({ class_id: classId }),
+    body: JSON.stringify({ class_id: classId }),
   });
   if (res.status === 403) throw new Error('Invalid token. Please rescan the QR code.');
-  if (!res.ok)            throw new Error('Failed to add point');
+  if (!res.ok) throw new Error('Failed to add point');
   return res.json();
 }
 
@@ -73,7 +75,7 @@ import { useState, useEffect, useCallback } from 'react';
 export function useClasses() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -87,7 +89,9 @@ export function useClasses() {
     }
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return { classes, loading, error, refresh };
 }
@@ -97,9 +101,9 @@ export function useClasses() {
  * Returns { total, loading, error, refresh }
  */
 export function useTotal(pollIntervalMs = 10_000) {
-  const [total,   setTotal]   = useState(0);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   const refresh = useCallback(async () => {
     try {

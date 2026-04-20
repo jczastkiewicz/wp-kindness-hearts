@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  # ── PHP: syntax check + static analysis ──────────────────────────────────────
+  # ── PHP: syntax check + static analysis + formatting ─────────────────────────
   php:
-    name: PHP — syntax & PHPStan
+    name: PHP — syntax, PHPStan & CS Fixer
     runs-on: ubuntu-latest
 
     steps:
@@ -32,9 +32,12 @@ jobs:
       - name: PHPStan static analysis
         run: vendor/bin/phpstan analyse --error-format=github
 
-  # ── JavaScript: ESLint ────────────────────────────────────────────────────────
+      - name: PHP CS Fixer — format check
+        run: vendor/bin/php-cs-fixer check --config=.php-cs-fixer.php --diff --no-interaction
+
+  # ── JavaScript: ESLint + Prettier ────────────────────────────────────────────
   js:
-    name: JS — ESLint
+    name: JS — ESLint & Prettier
     runs-on: ubuntu-latest
 
     steps:
@@ -55,3 +58,7 @@ jobs:
       - name: ESLint
         working-directory: app
         run: npm run lint
+
+      - name: Prettier — format check
+        working-directory: app
+        run: npm run format:check

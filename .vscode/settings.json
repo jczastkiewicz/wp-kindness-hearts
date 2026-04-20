@@ -1,0 +1,55 @@
+{
+  // ── Editor defaults ────────────────────────────────────────────────────────
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+
+  // ── Prettier: default formatter for JS/JSX/JSON/CSS ───────────────────────
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // ── PHP CS Fixer: formatter for PHP ───────────────────────────────────────
+  "[php]": {
+    "editor.defaultFormatter": "junstyle.php-cs-fixer",
+    "editor.tabSize": 4
+  },
+  "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+  "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.php",
+  "php-cs-fixer.onsave": true,
+  "php-cs-fixer.autoFixBySemicolon": false,
+
+  // ── Prettier config path (picked up automatically from app/.prettierrc) ───
+  "prettier.configPath": "app/.prettierrc",
+
+  // ── ESLint ─────────────────────────────────────────────────────────────────
+  "eslint.workingDirectories": ["app"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ── File associations ──────────────────────────────────────────────────────
+  "files.associations": {
+    "*.php": "php"
+  }
+}
