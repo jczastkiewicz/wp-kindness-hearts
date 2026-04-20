@@ -24,12 +24,12 @@ __MACOSX/
 # ── PHP / Composer ────────────────────────────────────────────────
 vendor/
 composer.lock
+.php-cs-fixer.cache
 
 # ── Coverage ──────────────────────────────────────────────────────
 app/coverage/
 
 # ── Editors ───────────────────────────────────────────────────────
-.vscode/
 .idea/
 *.swp
 *.swo

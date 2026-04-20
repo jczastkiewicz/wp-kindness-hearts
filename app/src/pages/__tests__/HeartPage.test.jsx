@@ -4,7 +4,7 @@ import HeartPage from '../HeartPage.jsx';
 
 // Mock the API hooks so HeartPage never makes real fetch calls
 vi.mock('../../api/wpApi.js', () => ({
-  useTotal:   vi.fn(),
+  useTotal: vi.fn(),
   useClasses: vi.fn(),
 }));
 

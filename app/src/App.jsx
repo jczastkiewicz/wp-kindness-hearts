@@ -1,6 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import TeacherPage from './pages/TeacherPage.jsx';
-import HeartPage   from './pages/HeartPage.jsx';
+import HeartPage from './pages/HeartPage.jsx';
 
 /**
  * App uses hash-based routing so it works on any server path.
@@ -15,10 +15,10 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/teacher" element={<TeacherPage />} />
-        <Route path="/heart"   element={<HeartPage />} />
+        <Route path="/heart" element={<HeartPage />} />
         {/* Default: check if token is in search params */}
-        <Route path="/"        element={<DefaultRedirect />} />
-        <Route path="*"        element={<Navigate to="/" replace />} />
+        <Route path="/" element={<DefaultRedirect />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>
   );

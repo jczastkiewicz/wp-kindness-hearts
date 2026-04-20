@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "format": "prettier --write src",
+    "format:check": "prettier --check src",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage --passWithNoTests"
@@ -35,6 +37,7 @@
     "vitest": "^4.1.4",
     "vite": "^7.0.0",
     "vite-plugin-pwa": "^1.2.0",
-    "workbox-window": "^7.1.0"
+    "workbox-window": "^7.1.0",
+    "prettier": "^3.5.0"
   }
 }

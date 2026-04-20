@@ -1,12 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import {
-  fetchClasses,
-  addPoint,
-  fetchTotal,
-  useClasses,
-  useTotal,
-} from '../wpApi.js';
+import { fetchClasses, addPoint, fetchTotal, useClasses, useTotal } from '../wpApi.js';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

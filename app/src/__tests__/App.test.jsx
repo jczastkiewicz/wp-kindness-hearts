@@ -5,7 +5,7 @@ import App from '../App.jsx';
 // Prevent pages from making real fetch calls
 vi.mock('../api/wpApi.js', () => ({
   useClasses: () => ({ classes: [], loading: false, error: null, refresh: vi.fn() }),
-  useTotal:   () => ({ total: 0,   loading: false, error: null, refresh: vi.fn() }),
+  useTotal: () => ({ total: 0, loading: false, error: null, refresh: vi.fn() }),
   addPoint: vi.fn(),
 }));
 
