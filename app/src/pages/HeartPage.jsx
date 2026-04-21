@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useTotal, useClasses } from '../api/wpApi.js';
-import HeartVisualization from '../components/HeartVisualization.jsx';
 import ResizeAwareHeart from '../components/ResizeAwareHeart.jsx';
 
 /**
