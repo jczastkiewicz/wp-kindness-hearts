@@ -77,7 +77,9 @@ describe('HeartVisualization', () => {
     const { rerender } = render(<HeartVisualization filledCount={10} size={300} />);
     // Count popping circles after initial render
     const beforeCircles = Array.from(document.querySelectorAll('circle'));
-    const beforePopping = beforeCircles.filter((c) => (c.style.transform || '').includes('scale(1.3)')).length;
+    const beforePopping = beforeCircles.filter((c) =>
+      (c.style.transform || '').includes('scale(1.3)')
+    ).length;
 
     // Decrease filledCount — should not create new popping dots
     await act(async () => {
@@ -86,7 +88,9 @@ describe('HeartVisualization', () => {
 
     // Count popping after decrease
     const afterCircles = Array.from(document.querySelectorAll('circle'));
-    const afterPopping = afterCircles.filter((c) => (c.style.transform || '').includes('scale(1.3)')).length;
+    const afterPopping = afterCircles.filter((c) =>
+      (c.style.transform || '').includes('scale(1.3)')
+    ).length;
 
     expect(afterCircles.length).toBeGreaterThan(0);
     // Ensure pops did not increase
