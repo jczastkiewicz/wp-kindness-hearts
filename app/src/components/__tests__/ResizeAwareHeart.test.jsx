@@ -15,4 +15,22 @@ describe('ResizeAwareHeart', () => {
     // HeartVisualization shows the filled count as text
     expect(getByText('5')).toBeTruthy();
   });
+
+  it('uses ResizeObserver when available', () => {
+    // Provide a minimal mock ResizeObserver
+    class MockRO {
+      constructor(cb) { this.cb = cb; }
+      observe() { /* no-op */ }
+      disconnect() { /* no-op */ }
+    }
+    // eslint-disable-next-line no-undef
+    global.ResizeObserver = MockRO;
+
+    const { getByText } = render(<ResizeAwareHeart count={7} maxSize={300} minSize={100} />);
+    expect(getByText('7')).toBeTruthy();
+
+    // Clean up
+    // eslint-disable-next-line no-undef
+    delete global.ResizeObserver;
+  });
 });
