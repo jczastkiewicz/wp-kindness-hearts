@@ -72,7 +72,7 @@ import { useState, useEffect, useCallback } from 'react';
  * Hook: load classes and provide a refresh function.
  * Returns { classes, loading, error, refresh }
  */
-export function useClasses() {
+export function useClasses(pollIntervalMs = 0) {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -91,7 +91,10 @@ export function useClasses() {
 
   useEffect(() => {
     refresh();
-  }, [refresh]);
+    if (!pollIntervalMs) return;
+    const id = setInterval(refresh, pollIntervalMs);
+    return () => clearInterval(id);
+  }, [refresh, pollIntervalMs]);
 
   return { classes, loading, error, refresh };
 }
