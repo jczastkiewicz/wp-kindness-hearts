@@ -21,8 +21,12 @@ export default function TeacherPage() {
   const { classes, loading, error: loadError } = useClasses();
 
   // Initialize selection from classes when available so the UI is ready immediately.
-  const [selectedId, setSelectedId] = useState(() => (classes && classes[0] ? String(classes[0].id) : ''));
-  const [classPoints, setClassPoints] = useState(() => (classes && classes[0] ? classes[0].points : null));
+  const [selectedId, setSelectedId] = useState(() =>
+    classes && classes[0] ? String(classes[0].id) : ''
+  );
+  const [classPoints, setClassPoints] = useState(() =>
+    classes && classes[0] ? classes[0].points : null
+  );
   const [totalPoints, setTotalPoints] = useState(null);
   const [adding, setAdding] = useState(false);
   const [flash, setFlash] = useState(false);
@@ -39,7 +43,6 @@ export default function TeacherPage() {
       });
     }
   }, [classes, selectedId]);
-
 
   /* istanbul ignore next: small live-region timing paths are exercised by e2e tests; unit testing timeouts here is brittle */
   const handleAddPoint = useCallback(async () => {
