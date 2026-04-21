@@ -3,12 +3,8 @@ import HeartVisualization from './HeartVisualization.jsx';
 
 export default function ResizeAwareHeart({ count, maxSize = 560, minSize = 280 }) {
   const ref = useRef(null);
-  const [width, setWidth] = useState(
-    Math.min(
-      maxSize,
-      typeof window !== 'undefined' ? Math.max(minSize, window.innerWidth - 32) : maxSize
-    )
-  );
+  // Start with a safe default and compute the real size after mount.
+  const [width, setWidth] = useState(maxSize);
 
   useEffect(() => {
     const el = ref.current;
@@ -24,9 +20,9 @@ export default function ResizeAwareHeart({ count, maxSize = 560, minSize = 280 }
         }
       });
       ro.observe(el);
-      // Initialise
+      // Initialise after mount using the observed size (or fallback width).
       setTimeout(() => {
-        const w = Math.round(el.clientWidth || window.innerWidth - 32);
+        const w = Math.round(el.clientWidth || (typeof window !== 'undefined' ? window.innerWidth - 32 : maxSize));
         setWidth(Math.max(minSize, Math.min(maxSize, w)));
       }, 0);
       return () => ro.disconnect();
@@ -34,7 +30,7 @@ export default function ResizeAwareHeart({ count, maxSize = 560, minSize = 280 }
 
     // Fallback for test environments (jsdom) or older browsers
     function onResize() {
-      const w = Math.round(el.clientWidth || window.innerWidth - 32);
+      const w = Math.round(el.clientWidth || (typeof window !== 'undefined' ? window.innerWidth - 32 : maxSize));
       setWidth(Math.max(minSize, Math.min(maxSize, w)));
     }
 
