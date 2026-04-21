@@ -83,11 +83,7 @@
             return;
         }
         // Fetch the admin-only secret token lazily and then build the QR using it.
-        fetch( api + '/token', { method: 'GET', headers: { 'X-WP-Nonce': nonce } } )
-            .then( r => {
-                if (! r.ok) throw new Error('Failed to fetch token');
-                return r.json();
-            } )
+        apiFetch('/token', { method: 'GET' })
             .then( data => {
                 teacherUrl = KH.siteUrl + '/kindness-app/#/teacher?token=' + encodeURIComponent( data.token );
                 qrStyling = buildQR( document.getElementById( 'kh-qrcode' ), 220 );
@@ -100,6 +96,17 @@
             });
     }
     initQR();
+
+    // Small helper that wraps fetch and surfaces errors to the UI.
+    function apiFetch(path, opts = {}) {
+        return fetch(api + path, Object.assign({ headers }, opts))
+            .then(r => (r.ok ? r.json() : r.text().then(t => { throw new Error(t || r.statusText); })))
+            .catch(err => {
+                // Lightweight feedback for admins — non-blocking but visible.
+                alert(err.message || 'Request failed');
+                throw err;
+            });
+    }
 
     // ── Get QR canvas data URL ───────────────────────────────────────────────
     function getQRDataUrl( callback ) {
@@ -243,14 +250,16 @@
 
     // ── Load data ────────────────────────────────────────────────────────────
     function loadData() {
-        Promise.all( [
-            fetch( api + '/classes' ).then( r => r.json() ),
-            fetch( api + '/total' ).then( r => r.json() ),
-        ] ).then( ( [ classes, total ] ) => {
-            document.getElementById( 'kh-total-display' ).textContent = total.total;
-            document.getElementById( 'kh-classes-count' ).textContent = classes.length;
-            renderClasses( classes );
-        } );
+        Promise.all([
+            apiFetch('/classes', { method: 'GET' }),
+            apiFetch('/total', { method: 'GET' }),
+        ]).then(([ classes, total ]) => {
+            document.getElementById('kh-total-display').textContent = total.total;
+            document.getElementById('kh-classes-count').textContent = classes.length;
+            renderClasses(classes);
+        }).catch(() => {
+            // apiFetch already alerts; nothing else to do here.
+        });
     }
 
     function renderClasses( classes ) {
@@ -269,35 +278,34 @@
         tbody.querySelectorAll( '.kh-del-btn' ).forEach( btn => {
             btn.addEventListener( 'click', () => {
                 if ( ! confirm( 'Delete this class and its points?' ) ) return;
-                fetch( api + '/classes/' + btn.dataset.id, { method: 'DELETE', headers } ).then( loadData );
+                apiFetch('/classes/' + btn.dataset.id, { method: 'DELETE' }).then( loadData ).catch(() => {});
             } );
         } );
     }
 
-    document.getElementById( 'kh-add-class-form' ).addEventListener( 'submit', e => {
+    document.getElementById('kh-add-class-form').addEventListener('submit', e => {
         e.preventDefault();
-        const name = document.getElementById( 'kh-class-name' ).value.trim();
-        if ( ! name ) return;
-        fetch( api + '/classes', {
-            method: 'POST', headers,
-            body: JSON.stringify( { name } ),
-        } ).then( () => {
-            document.getElementById( 'kh-class-name' ).value = '';
-            loadData();
-        } );
-    } );
+        const name = document.getElementById('kh-class-name').value.trim();
+        if (!name) return;
+        apiFetch('/classes', { method: 'POST', body: JSON.stringify({ name }) })
+            .then(() => {
+                document.getElementById('kh-class-name').value = '';
+                loadData();
+            })
+            .catch(() => {});
+    });
 
-    document.getElementById( 'kh-reset-btn' ).addEventListener( 'click', () => {
-        if ( ! confirm( 'Reset ALL points to zero? This cannot be undone.' ) ) return;
-        fetch( api + '/reset', { method: 'POST', headers } ).then( loadData );
-    } );
+    document.getElementById('kh-reset-btn').addEventListener('click', () => {
+        if (!confirm('Reset ALL points to zero? This cannot be undone.')) return;
+        apiFetch('/reset', { method: 'POST' }).then(loadData).catch(() => {});
+    });
 
-    document.getElementById( 'kh-regen-token-btn' ).addEventListener( 'click', () => {
-        if ( ! confirm( 'This will invalidate the old QR code. Continue?' ) ) return;
-        fetch( api + '/token/regenerate', { method: 'POST', headers } )
-            .then( r => r.json() )
-            .then( () => location.reload() );
-    } );
+    document.getElementById('kh-regen-token-btn').addEventListener('click', () => {
+        if (!confirm('This will invalidate the old QR code. Continue?')) return;
+        apiFetch('/token/regenerate', { method: 'POST' })
+            .then(() => location.reload())
+            .catch(() => {});
+    });
 
     function escHtml( s ) {
         return String( s )

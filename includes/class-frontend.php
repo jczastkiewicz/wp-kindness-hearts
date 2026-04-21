@@ -94,7 +94,7 @@ class KHearts_Frontend
 <html lang="<?php echo esc_attr(str_replace('_', '-', get_locale())); ?>">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#e53e3e" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

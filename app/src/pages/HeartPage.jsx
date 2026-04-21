@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTotal, useClasses } from '../api/wpApi.js';
-import HeartVisualization from '../components/HeartVisualization.jsx';
+import ResizeAwareHeart from '../components/ResizeAwareHeart.jsx';
 
 /**
  * HeartPage – the public display page.
@@ -66,7 +66,7 @@ export default function HeartPage() {
 
       {/* Heart visualization */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-        <HeartVisualization filledCount={total} size={Math.min(560, window.innerWidth - 32)} />
+        <ResizeAwareHeart count={total} maxSize={560} minSize={280} />
 
         {/* Grand total badge */}
         <div

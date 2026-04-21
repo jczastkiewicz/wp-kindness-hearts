@@ -1,0 +1,66 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, act } from '@testing-library/react';
+import ResizeAwareHeart from '../ResizeAwareHeart.jsx';
+
+beforeEach(() => {
+  // Simulate environment without ResizeObserver (e.g., jsdom in CI)
+  // Delete if present to test fallback path
+  // eslint-disable-next-line no-undef
+  if (typeof global.ResizeObserver !== 'undefined') delete global.ResizeObserver;
+});
+
+describe('ResizeAwareHeart', () => {
+  it('renders without ResizeObserver and shows count', () => {
+    const { getByText } = render(<ResizeAwareHeart count={5} maxSize={300} minSize={100} />);
+    // HeartVisualization shows the filled count as text
+    expect(getByText('5')).toBeTruthy();
+  });
+
+  it('uses ResizeObserver when available', async () => {
+    // Provide a mock ResizeObserver that invokes the callback with an entry
+    class MockRO {
+      constructor(cb) {
+        this.cb = cb;
+      }
+      observe() {
+        // Simulate an observed entry with a specific width
+        this.cb([{ contentRect: { width: 220 } }]);
+      }
+      disconnect() {}
+    }
+    // eslint-disable-next-line no-undef
+    global.ResizeObserver = MockRO;
+
+    const { getByText } = render(<ResizeAwareHeart count={7} maxSize={300} minSize={100} />);
+
+    // Wait a tick for effects to run
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(getByText('7')).toBeTruthy();
+
+    // Clean up
+    // eslint-disable-next-line no-undef
+    delete global.ResizeObserver;
+  });
+
+  it('fallback onResize uses element clientWidth when ResizeObserver absent', async () => {
+    // Ensure ResizeObserver is not present
+    // eslint-disable-next-line no-undef
+    if (typeof global.ResizeObserver !== 'undefined') delete global.ResizeObserver;
+
+    const { container } = render(<ResizeAwareHeart count={3} maxSize={300} minSize={100} />);
+    const wrapper = container.querySelector('div');
+    // Mock a clientWidth on the wrapper element
+    Object.defineProperty(wrapper, 'clientWidth', { value: 220, configurable: true });
+
+    await act(async () => {
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    // Allow the onResize handler to run
+    await new Promise((r) => setTimeout(r, 0));
+
+    const svg = container.querySelector('svg');
+    expect(svg).toHaveAttribute('width', '220');
+  });
+});

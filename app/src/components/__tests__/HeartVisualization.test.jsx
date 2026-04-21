@@ -73,6 +73,30 @@ describe('HeartVisualization', () => {
     expect(circles.length).toBeGreaterThan(0);
   });
 
+  it('does not mark dots as popping when filledCount decreases', async () => {
+    const { rerender } = render(<HeartVisualization filledCount={10} size={300} />);
+    // Count popping circles after initial render
+    const beforeCircles = Array.from(document.querySelectorAll('circle'));
+    const beforePopping = beforeCircles.filter((c) =>
+      (c.style.transform || '').includes('scale(1.3)')
+    ).length;
+
+    // Decrease filledCount — should not create new popping dots
+    await act(async () => {
+      rerender(<HeartVisualization filledCount={5} size={300} />);
+    });
+
+    // Count popping after decrease
+    const afterCircles = Array.from(document.querySelectorAll('circle'));
+    const afterPopping = afterCircles.filter((c) =>
+      (c.style.transform || '').includes('scale(1.3)')
+    ).length;
+
+    expect(afterCircles.length).toBeGreaterThan(0);
+    // Ensure pops did not increase
+    expect(afterPopping).toBeLessThanOrEqual(beforePopping);
+  });
+
   it('ensures dot radius has an increased minimum for readability', () => {
     const { container } = render(<HeartVisualization filledCount={0} size={1920} />);
     const circle = container.querySelector('circle');
