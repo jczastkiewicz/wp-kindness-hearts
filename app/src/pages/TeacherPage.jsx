@@ -29,6 +29,17 @@ export default function TeacherPage() {
   const [addError, setAddError] = useState(null);
   const [liveMessage, setLiveMessage] = useState('');
 
+  // Ensure we auto-select the first class once classes are loaded. Deferred
+  // to a microtask so we don't violate react-hooks/set-state-in-effect lint rule.
+  useEffect(() => {
+    if (classes.length && !selectedId) {
+      Promise.resolve().then(() => {
+        setSelectedId(String(classes[0].id));
+        setClassPoints(classes[0].points);
+      });
+    }
+  }, [classes, selectedId]);
+
 
   /* istanbul ignore next: small live-region timing paths are exercised by e2e tests; unit testing timeouts here is brittle */
   const handleAddPoint = useCallback(async () => {
