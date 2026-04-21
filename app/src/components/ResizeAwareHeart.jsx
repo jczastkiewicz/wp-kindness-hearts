@@ -3,13 +3,18 @@ import HeartVisualization from './HeartVisualization.jsx';
 
 export default function ResizeAwareHeart({ count, maxSize = 560, minSize = 280 }) {
   const ref = useRef(null);
-  const [width, setWidth] = useState(Math.min(maxSize, typeof window !== 'undefined' ? Math.max(minSize, window.innerWidth - 32) : maxSize));
+  const [width, setWidth] = useState(
+    Math.min(
+      maxSize,
+      typeof window !== 'undefined' ? Math.max(minSize, window.innerWidth - 32) : maxSize
+    )
+  );
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     // Use ResizeObserver when available to react to container size changes
-    const ro = new ResizeObserver(entries => {
+    const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const w = Math.round(entry.contentRect.width);
         setWidth(Math.max(minSize, Math.min(maxSize, w)));

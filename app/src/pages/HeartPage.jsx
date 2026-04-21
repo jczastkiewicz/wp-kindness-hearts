@@ -85,7 +85,6 @@ export default function HeartPage() {
         </div>
       </div>
 
-
       {/* Per-class leaderboard */}
       {sorted.length > 0 && (
         <div style={{ width: '100%', maxWidth: 480 }}>
