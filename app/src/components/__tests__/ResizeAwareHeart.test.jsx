@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import ResizeAwareHeart from '../ResizeAwareHeart.jsx';
 
 beforeEach(() => {
@@ -41,5 +41,26 @@ describe('ResizeAwareHeart', () => {
     // Clean up
     // eslint-disable-next-line no-undef
     delete global.ResizeObserver;
+  });
+
+  it('fallback onResize uses element clientWidth when ResizeObserver absent', async () => {
+    // Ensure ResizeObserver is not present
+    // eslint-disable-next-line no-undef
+    if (typeof global.ResizeObserver !== 'undefined') delete global.ResizeObserver;
+
+    const { container } = render(<ResizeAwareHeart count={3} maxSize={300} minSize={100} />);
+    const wrapper = container.querySelector('div');
+    // Mock a clientWidth on the wrapper element
+    Object.defineProperty(wrapper, 'clientWidth', { value: 220, configurable: true });
+
+    await act(async () => {
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    // Allow the onResize handler to run
+    await new Promise((r) => setTimeout(r, 0));
+
+    const svg = container.querySelector('svg');
+    expect(svg).toHaveAttribute('width', '220');
   });
 });
