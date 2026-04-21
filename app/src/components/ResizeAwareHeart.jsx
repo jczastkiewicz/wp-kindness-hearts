@@ -21,7 +21,7 @@ export default function ResizeAwareHeart({ count, maxSize = 560, minSize = 280 }
       if (el) ro.observe(el);
       // Initialise after mount using the observed size (or fallback width).
       setTimeout(() => {
-        const w = Math.round((el && el.clientWidth) || (typeof window !== 'undefined' ? window.innerWidth - 32 : maxSize));
+        const w = Math.round((el && el.clientWidth) || (window.innerWidth - 32));
         setWidth(Math.max(minSize, Math.min(maxSize, w)));
       }, 0);
       return () => ro.disconnect();
@@ -29,7 +29,7 @@ export default function ResizeAwareHeart({ count, maxSize = 560, minSize = 280 }
 
     // Fallback for test environments (jsdom) or older browsers
     function onResize() {
-      const w = Math.round((el && el.clientWidth) || (typeof window !== 'undefined' ? window.innerWidth - 32 : maxSize));
+      const w = Math.round((el && el.clientWidth) || (window.innerWidth - 32));
       setWidth(Math.max(minSize, Math.min(maxSize, w)));
     }
 
