@@ -69,4 +69,34 @@ describe('TeacherPage — extra behaviors', () => {
     resolvePromise({ class_id: 1, class_points: 6, total_points: 20 });
     await waitFor(() => expect(btn).not.toBeDisabled());
   });
+
+  it('auto-selects when classes arrive after initial render', async () => {
+    // First render: no classes
+    useClasses.mockReturnValueOnce({ classes: [], loading: false, error: null });
+    // Subsequent renders: classes available
+    useClasses.mockReturnValue({ classes: twoClasses, loading: false, error: null });
+
+    const { rerender } = render(
+      <MemoryRouter initialEntries={[`/teacher?token=${encodeURIComponent('tok')}`]}>
+        <Routes>
+          <Route path="/teacher" element={<TeacherPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Initially the "No classes yet" UI is shown
+    expect(screen.getByText(/No classes yet/i)).toBeInTheDocument();
+
+    // Rerender to simulate classes arriving
+    rerender(
+      <MemoryRouter initialEntries={[`/teacher?token=${encodeURIComponent('tok')}`]}>
+        <Routes>
+          <Route path="/teacher" element={<TeacherPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // After classes arrive the first class should be auto-selected and its points shown
+    await waitFor(() => expect(screen.getByText('5')).toBeInTheDocument());
+  });
 });
