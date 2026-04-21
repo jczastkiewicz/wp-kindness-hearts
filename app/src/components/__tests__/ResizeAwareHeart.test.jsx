@@ -16,23 +16,26 @@ describe('ResizeAwareHeart', () => {
     expect(getByText('5')).toBeTruthy();
   });
 
-  it('uses ResizeObserver when available', () => {
-    // Provide a minimal mock ResizeObserver
+  it('uses ResizeObserver when available', async () => {
+    // Provide a mock ResizeObserver that invokes the callback with an entry
     class MockRO {
       constructor(cb) {
         this.cb = cb;
       }
       observe() {
-        /* no-op */
+        // Simulate an observed entry with a specific width
+        this.cb([{ contentRect: { width: 220 } }]);
       }
-      disconnect() {
-        /* no-op */
-      }
+      disconnect() {}
     }
     // eslint-disable-next-line no-undef
     global.ResizeObserver = MockRO;
 
     const { getByText } = render(<ResizeAwareHeart count={7} maxSize={300} minSize={100} />);
+
+    // Wait a tick for effects to run
+    await new Promise((r) => setTimeout(r, 0));
+
     expect(getByText('7')).toBeTruthy();
 
     // Clean up
