@@ -28,14 +28,17 @@ function DefaultRedirect() {
   // If a token is provided in the outer query string (e.g. ?token=...), forward
   // it into the hash-based teacher route so the app boots with the token.
   // This covers cases where a link rewriter or platform strips the '#' fragment.
+  let token = null;
   try {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    if (token) {
-      return <Navigate to={'/teacher?token=' + encodeURIComponent(token)} replace />;
-    }
+    token = params.get('token');
   } catch {
     // ignore and fall back to heart
   }
+
+  if (token) {
+    return <Navigate to={'/teacher?token=' + encodeURIComponent(token)} replace />;
+  }
+
   return <Navigate to="/heart" replace />;
 }
