@@ -13,7 +13,7 @@ import HeartVisualization from '../components/HeartVisualization.jsx';
  */
 export default function HeartPage() {
   const { total, loading: loadingTotal } = useTotal(10_000);
-  const { classes, loading: loadingClasses } = useClasses();
+  const { classes, loading: loadingClasses } = useClasses(10_000);
 
   // Sorted classes – highest points first
   const sorted = useMemo(() => [...classes].sort((a, b) => b.points - a.points), [classes]);
