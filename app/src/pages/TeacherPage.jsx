@@ -31,7 +31,8 @@ export default function TeacherPage() {
   // Auto-select first class when classes load
   useEffect(() => {
     if (classes.length && !selectedId) {
-      setSelectedId(String(classes[0].id));
+      // Defer to avoid calling setState synchronously within the effect
+      Promise.resolve().then(() => setSelectedId(String(classes[0].id)));
     }
   }, [classes, selectedId]);
 
@@ -39,7 +40,7 @@ export default function TeacherPage() {
   useEffect(() => {
     if (!selectedId) return;
     const cls = classes.find((c) => String(c.id) === selectedId);
-    if (cls) setClassPoints(cls.points);
+    if (cls) Promise.resolve().then(() => setClassPoints(cls.points));
   }, [selectedId, classes]);
 
   /* istanbul ignore next: small live-region timing paths are exercised by e2e tests; unit testing timeouts here is brittle */

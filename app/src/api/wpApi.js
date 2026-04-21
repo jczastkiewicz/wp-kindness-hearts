@@ -90,7 +90,8 @@ export function useClasses(pollIntervalMs = 0) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    // Defer initial refresh to avoid calling setState synchronously inside an effect
+    Promise.resolve().then(refresh);
     if (!pollIntervalMs) return;
     const id = setInterval(refresh, pollIntervalMs);
     return () => clearInterval(id);
@@ -120,7 +121,8 @@ export function useTotal(pollIntervalMs = 10_000) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    // Defer initial refresh to avoid calling setState synchronously inside an effect
+    Promise.resolve().then(refresh);
     if (!pollIntervalMs) return;
     const id = setInterval(refresh, pollIntervalMs);
     return () => clearInterval(id);
