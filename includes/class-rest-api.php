@@ -212,6 +212,7 @@ class KHearts_REST_API
 
         // Subtract from school total atomically using SQL to avoid a
         // read-modify-write race against concurrent add_point calls.
+        global $wpdb;
         $options_table = $wpdb->options;
         $wpdb->query($wpdb->prepare(
             "UPDATE {$options_table}
