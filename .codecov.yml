@@ -2,11 +2,11 @@ coverage:
   status:
     project:
       default:
-        target: 80
+        target: 85
     patch:
       # Default: don't fail PRs on coverage for non-JS changes
       default:
         target: 0
       # Enforce a patch coverage target for the JS/TS app source only
       app/src/**:
-        target: 80
+        target: 85
