@@ -210,9 +210,16 @@ class KHearts_REST_API
         $points = (int) get_post_meta($id, '_khearts_points', true);
         wp_delete_post($id, true);
 
-        // Subtract from school total
-        $total = (int) get_option('khearts_total_points', 0);
-        update_option('khearts_total_points', max(0, $total - $points));
+        // Subtract from school total atomically using SQL to avoid a
+        // read-modify-write race against concurrent add_point calls.
+        $options_table = $wpdb->options;
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$options_table}
+               SET option_value = GREATEST(CAST(option_value AS UNSIGNED) - %d, 0)
+             WHERE option_name = %s",
+            $points,
+            'khearts_total_points'
+        ));
 
         return rest_ensure_response(['deleted' => true, 'id' => $id]);
     }
@@ -226,9 +233,14 @@ class KHearts_REST_API
             return new WP_Error('not_found', 'Class not found', ['status' => 404]);
         }
 
-        // Simple per-IP rate limit: 60 taps/minute per IP using WP transients.
+        // Rate limit: prefer scoping to the provided teacher token and class
+        // to avoid school-wide rate limits when behind NAT/proxies. Fallback to
+        // REMOTE_ADDR when no token is available (should not happen due to
+        // token_permission, but keep defensively).
+        $provided = $request->get_param('token') ?? $request->get_header('X-KHearts-Token') ?? '';
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        $rl_key = 'khearts_rl_' . md5($ip);
+        $rl_key_source = $provided !== '' ? $provided . '|' . $class_id : $ip;
+        $rl_key = 'khearts_rl_' . md5($rl_key_source);
         $rl_count = (int) get_transient($rl_key);
         if ($rl_count >= 60) {
             return new WP_Error('rate_limited', 'Rate limit exceeded', ['status' => 429]);
@@ -288,17 +300,31 @@ class KHearts_REST_API
 
     public static function reset_all(): WP_REST_Response|WP_Error
     {
-        update_option('khearts_total_points', 0);
+        global $wpdb;
+        $options_table = $wpdb->options;
+        $postmeta_table = $wpdb->postmeta;
 
-        $posts = get_posts([
-            'post_type' => 'khearts_class',
-            'post_status' => 'publish',
-            'posts_per_page' => -1,
-        ]);
-
-        foreach ($posts as $p) {
-            update_post_meta($p->ID, '_khearts_points', 0);
+        // Acquire a short transient-based lock to avoid races with concurrent
+        // add_point requests. This is lightweight and sufficient for the
+        // infrequent admin reset path.
+        $lock_key = 'khearts_reset_lock';
+        if (! set_transient($lock_key, 1, 5)) {
+            return new WP_Error('locked', 'Reset already in progress', ['status' => 423]);
         }
+
+        // Set the global total to zero atomically.
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$options_table} SET option_value = '0' WHERE option_name = %s",
+            'khearts_total_points'
+        ));
+
+        // Zero all class meta rows in one SQL statement for atomicity.
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$postmeta_table} SET meta_value = '0' WHERE meta_key = %s",
+            '_khearts_points'
+        ));
+
+        delete_transient($lock_key);
 
         return rest_ensure_response(['reset' => true]);
     }
