@@ -73,6 +73,19 @@ describe('addPoint', () => {
     const [fetchUrl] = fetch.mock.calls[0];
     expect(fetchUrl).not.toContain('token=');
   });
+
+  it('includes X-WP-Nonce header when nonce present in WP_CONFIG', async () => {
+    // Set a nonce via the injected WP_CONFIG global
+    globalThis.WP_CONFIG = { restUrl: '/wp-json/kindness/v1', nonce: 'abc123' };
+    mockFetch({ class_id: 1, class_points: 2, total_points: 10 });
+
+    await addPoint(1, 'token');
+    const [, init] = fetch.mock.calls[0];
+    expect(init.headers['X-WP-Nonce']).toBe('abc123');
+
+    // Clean up global
+    delete globalThis.WP_CONFIG;
+  });
 });
 
 // ── useClasses hook ───────────────────────────────────────────────────────────
