@@ -20,28 +20,15 @@ export default function TeacherPage() {
   const token = searchParams.get('token') || '';
   const { classes, loading, error: loadError } = useClasses();
 
-  const [selectedId, setSelectedId] = useState('');
-  const [classPoints, setClassPoints] = useState(null);
+  // Initialize selection from classes when available so the UI is ready immediately.
+  const [selectedId, setSelectedId] = useState(() => (classes && classes[0] ? String(classes[0].id) : ''));
+  const [classPoints, setClassPoints] = useState(() => (classes && classes[0] ? classes[0].points : null));
   const [totalPoints, setTotalPoints] = useState(null);
   const [adding, setAdding] = useState(false);
   const [flash, setFlash] = useState(false);
   const [addError, setAddError] = useState(null);
   const [liveMessage, setLiveMessage] = useState('');
 
-  // Auto-select first class when classes load
-  useEffect(() => {
-    if (classes.length && !selectedId) {
-      // Defer to avoid calling setState synchronously within the effect
-      Promise.resolve().then(() => setSelectedId(String(classes[0].id)));
-    }
-  }, [classes, selectedId]);
-
-  // Sync displayed points when selection changes
-  useEffect(() => {
-    if (!selectedId) return;
-    const cls = classes.find((c) => String(c.id) === selectedId);
-    if (cls) Promise.resolve().then(() => setClassPoints(cls.points));
-  }, [selectedId, classes]);
 
   /* istanbul ignore next: small live-region timing paths are exercised by e2e tests; unit testing timeouts here is brittle */
   const handleAddPoint = useCallback(async () => {
@@ -193,8 +180,11 @@ export default function TeacherPage() {
             className="kh-select"
             value={selectedId}
             onChange={(e) => {
-              setSelectedId(e.target.value);
+              const val = e.target.value;
+              setSelectedId(val);
               setAddError(null);
+              const cls = classes.find((c) => String(c.id) === val);
+              if (cls) setClassPoints(cls.points);
             }}
           >
             {classes.map((c) => (
