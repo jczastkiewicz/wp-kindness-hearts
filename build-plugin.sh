@@ -19,7 +19,7 @@ echo "────────────────────────�
 echo ""
 echo "📦  Building React app..."
 cd "$APP_DIR"
-npm install
+npm ci
 npm run build
 echo "    ✅  React app built → app/dist/"
 
