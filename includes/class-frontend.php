@@ -110,7 +110,16 @@ class KHearts_Frontend
 </head>
 <body>
     <div id="root"></div>
-    <script>window.WP_CONFIG = <?php echo wp_json_encode(['restUrl' => esc_url_raw(rest_url('kindness/v1')), 'nonce' => wp_create_nonce('wp_rest'), 'siteUrl' => site_url()]); ?>;</script>
+    <script>window.WP_CONFIG = <?php echo wp_json_encode([
+        'restUrl' => esc_url_raw(rest_url('kindness/v1')),
+        'nonce' => wp_create_nonce('wp_rest'),
+        'siteUrl' => site_url(),
+        // Locale in BCP 47 form (e.g. "pl-PL", "en-US"). The React app uses
+        // this as the default for its own i18n; users can override via the
+        // language switcher (persisted in localStorage).
+        'locale' => str_replace('_', '-', get_locale()),
+        'schoolName' => $school_name,
+    ]); ?>;</script>
     <script type="module" src="<?php echo esc_url($dist_url . $js_file); ?>"></script>
 </body>
 </html>

@@ -17,6 +17,13 @@
     const headers    = { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce };
     let teacherUrl    = null; // constructed after fetching admin-only token
     const schoolName = KH.schoolName;
+    // Translatable strings provided by PHP via wp_localize_script. Defensive
+    // fallbacks are English so the page remains usable if the localize call
+    // is missing for any reason.
+    const i18n = (KH && KH.i18n) || {};
+    function t(key, fallback) {
+        return Object.prototype.hasOwnProperty.call(i18n, key) ? i18n[key] : fallback;
+    }
 
     // ── Solid heart SVG as data URL (centre logo) ────────────────────────────
     const heartSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -76,7 +83,11 @@
             initQrTries++;
             if (initQrTries > INIT_QR_MAX) {
                 const el = document.getElementById('kh-qrcode');
-                el.innerHTML = '<div style="color:#c0392b;">QR library failed to load — please check your connection.</div>';
+                el.textContent = '';
+                const div = document.createElement('div');
+                div.style.color = '#c0392b';
+                div.textContent = t('qrLibFailed', 'QR library failed to load — please check your connection.');
+                el.appendChild(div);
                 return;
             }
             setTimeout( initQR, 100 );
@@ -91,7 +102,11 @@
             .catch( e => {
                 // If token fetch fails show an explanatory message in the QR area.
                 const el = document.getElementById('kh-qrcode');
-                el.innerHTML = '<div style="color:#c0392b;">Unable to load teacher QR token.</div>';
+                el.textContent = '';
+                const div = document.createElement('div');
+                div.style.color = '#c0392b';
+                div.textContent = t('tokenFetchFailed', 'Unable to load teacher QR token.');
+                el.appendChild(div);
                 console.error(e);
             });
     }
@@ -103,7 +118,7 @@
             .then(r => (r.ok ? r.json() : r.text().then(t => { throw new Error(t || r.statusText); })))
             .catch(err => {
                 // Lightweight feedback for admins — non-blocking but visible.
-                alert(err.message || 'Request failed');
+                alert(err.message || t('requestFailed', 'Request failed'));
                 throw err;
             });
     }
@@ -166,11 +181,22 @@
 
     function openPrintPoster( qrDataUrl ) {
         const win = window.open( '', '_blank', 'width=720,height=960' );
+        const lang = (KH && KH.locale) ? escHtml(KH.locale) : 'en';
+        const posterTitle      = escHtml( t('posterTitle', 'Kindness Hearts \u2013 Teacher QR Code') );
+        const posterTagline    = escHtml( t('posterTagline', 'Scan to award kindness points when a pupil helps a classmate') );
+        const posterHowTo      = escHtml( t('posterHowTo', 'How to use') );
+        const posterStep1      = escHtml( t('posterStep1', 'Scan the QR code with your phone camera') );
+        const posterStep2      = escHtml( t('posterStep2', 'Select your class from the dropdown') );
+        const posterStep3      = escHtml( t('posterStep3', 'Tap \u2764\ufe0f each time a pupil helps a classmate') );
+        const posterStep4      = escHtml( t('posterStep4', 'Watch the heart on the class screen fill up!') );
+        const posterTeachers   = escHtml( t('posterTeachersOnly', '\ud83d\udd12 For teachers only') );
+        const posterTeachersBd = escHtml( t('posterTeachersOnlyBody', 'Please do not share this QR code with pupils.') );
+        const posterQrAlt      = escHtml( t('posterQrAlt', 'QR Code for teacher app') );
         win.document.write( `<!DOCTYPE html>
-<html>
+<html lang="${ lang }">
 <head>
   <meta charset="UTF-8">
-  <title>Kindness Hearts \u2013 Teacher QR Code</title>
+  <title>${ posterTitle }</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -221,25 +247,25 @@
   <div class="heart-icon">\u2764\uFE0F</div>
   <div class="school">${ escHtml( schoolName ) }</div>
   <h1>Kindness Hearts</h1>
-  <p class="tagline">Scan to award kindness points<br>when a pupil helps a classmate</p>
+  <p class="tagline">${ posterTagline }</p>
 
   <div class="qr-wrap">
-    <img src="${ qrDataUrl }" alt="QR Code for teacher app" />
+    <img src="${ qrDataUrl }" alt="${ posterQrAlt }" />
   </div>
 
   <hr class="divider">
 
   <div class="steps">
-    <h2>How to use</h2>
-    <div class="step"><div class="step-num">1</div><div>Scan the QR code with your phone camera</div></div>
-    <div class="step"><div class="step-num">2</div><div>Select your class from the dropdown</div></div>
-    <div class="step"><div class="step-num">3</div><div>Tap \u2764\uFE0F each time a pupil helps a classmate</div></div>
-    <div class="step"><div class="step-num">4</div><div>Watch the heart on the class screen fill up!</div></div>
+    <h2>${ posterHowTo }</h2>
+    <div class="step"><div class="step-num">1</div><div>${ posterStep1 }</div></div>
+    <div class="step"><div class="step-num">2</div><div>${ posterStep2 }</div></div>
+    <div class="step"><div class="step-num">3</div><div>${ posterStep3 }</div></div>
+    <div class="step"><div class="step-num">4</div><div>${ posterStep4 }</div></div>
   </div>
 
   <div class="warning">
-    <strong>\uD83D\uDD12 For teachers only</strong>
-    Please do not share this QR code with pupils.
+    <strong>${ posterTeachers }</strong>
+    ${ posterTeachersBd }
   </div>
 </div>
 <script>window.onload = function(){ window.print(); };<\/script>
@@ -265,19 +291,21 @@
     function renderClasses( classes ) {
         const tbody = document.getElementById( 'kh-classes-body' );
         if ( ! classes.length ) {
-            tbody.innerHTML = '<tr><td colspan="3">No classes yet. Add one above.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3"></td></tr>';
+            tbody.querySelector('td').textContent = t('noClassesYet', 'No classes yet. Add one above.');
             return;
         }
+        const deleteLabel = t('deleteBtn', 'Delete');
         tbody.innerHTML = classes.map( c => `
             <tr>
                 <td>${ escHtml( c.name ) }</td>
                 <td style="text-align:center;font-weight:700;">${ c.points }</td>
-                <td><button class="button button-small kh-del-btn" data-id="${ c.id }">Delete</button></td>
+                <td><button class="button button-small kh-del-btn" data-id="${ c.id }">${ escHtml( deleteLabel ) }</button></td>
             </tr>
         ` ).join( '' );
         tbody.querySelectorAll( '.kh-del-btn' ).forEach( btn => {
             btn.addEventListener( 'click', () => {
-                if ( ! confirm( 'Delete this class and its points?' ) ) return;
+                if ( ! confirm( t('confirmDeleteClass', 'Delete this class and its points?') ) ) return;
                 apiFetch('/classes/' + btn.dataset.id, { method: 'DELETE' }).then( loadData ).catch(() => {});
             } );
         } );
@@ -296,12 +324,12 @@
     });
 
     document.getElementById('kh-reset-btn').addEventListener('click', () => {
-        if (!confirm('Reset ALL points to zero? This cannot be undone.')) return;
+        if (!confirm(t('confirmReset', 'Reset ALL points to zero? This cannot be undone.'))) return;
         apiFetch('/reset', { method: 'POST' }).then(loadData).catch(() => {});
     });
 
     document.getElementById('kh-regen-token-btn').addEventListener('click', () => {
-        if (!confirm('This will invalidate the old QR code. Continue?')) return;
+        if (!confirm(t('confirmRegen', 'This will invalidate the old QR code. Continue?'))) return;
         apiFetch('/token/regenerate', { method: 'POST' })
             .then(() => location.reload())
             .catch(() => {});
