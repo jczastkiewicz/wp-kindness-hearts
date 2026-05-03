@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useClasses, addPoint } from '../api/wpApi.js';
+import LanguageSwitcher from '../components/LanguageSwitcher.jsx';
 
 /**
  * TeacherPage
@@ -14,8 +16,10 @@ import { useClasses, addPoint } from '../api/wpApi.js';
  *   - Live point counter for the selected class
  *   - Feedback flash on success
  *   - Error display on token failure
+ *   - PL/EN language switcher in the top-right corner
  */
 export default function TeacherPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') || '';
   const { classes, loading, error: loadError } = useClasses();
@@ -50,7 +54,7 @@ export default function TeacherPage() {
     setAdding(true);
     setAddError(null);
     // Announce beginning of operation for screen readers
-    setLiveMessage('Adding a kindness point...');
+    setLiveMessage(t('teacher.live.addingPoint'));
 
     try {
       const res = await addPoint(Number(selectedId), token);
@@ -61,9 +65,9 @@ export default function TeacherPage() {
       setTimeout(() => setFlash(false), 1300);
 
       const cls = classes.find((c) => String(c.id) === selectedId);
-      const className = cls?.name || 'selected class';
+      const className = cls?.name || t('teacher.live.selectedClass');
       setLiveMessage(
-        `Added a point to ${className}. ${res.class_points} point${res.class_points === 1 ? '' : 's'} in the class.`
+        t('teacher.live.added', { name: className, count: res.class_points })
       );
       // Clear live message after it's been read
       setTimeout(() => setLiveMessage(''), 3000);
@@ -71,25 +75,26 @@ export default function TeacherPage() {
       setAddError(e.message);
       // Keep the live region message distinct from the visible error text to
       // avoid duplicate getByText matches in tests while still announcing it.
-      setLiveMessage('An error occurred while adding the point.');
+      setLiveMessage(t('teacher.live.errorAdding'));
       setTimeout(() => setLiveMessage(''), 4000);
     } finally {
       setAdding(false);
     }
-  }, [selectedId, token, adding, classes]);
+  }, [selectedId, token, adding, classes, t]);
 
   // ── No token ──────────────────────────────────────────────────────────────
   if (!token) {
     return (
       <div className="full-page" style={{ justifyContent: 'center', padding: 32 }}>
+        <LanguageSwitcher />
         <div className="card" style={{ maxWidth: 360, textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: 16 }}>
             <span aria-hidden="true">🔑</span>
           </div>
-          <h2 style={{ color: '#c0392b', marginBottom: 8 }}>Access required</h2>
-          <p style={{ color: '#718096' }}>
-            Please scan the QR code provided by your school administrator to open the teacher app.
-          </p>
+          <h2 style={{ color: '#c0392b', marginBottom: 8 }}>
+            {t('teacher.noToken.title')}
+          </h2>
+          <p style={{ color: '#718096' }}>{t('teacher.noToken.body')}</p>
         </div>
       </div>
     );
@@ -99,6 +104,7 @@ export default function TeacherPage() {
   if (loading) {
     return (
       <div className="full-page" style={{ justifyContent: 'center' }}>
+        <LanguageSwitcher />
         <div className="spinner" />
       </div>
     );
@@ -108,6 +114,7 @@ export default function TeacherPage() {
   if (loadError) {
     return (
       <div className="full-page" style={{ justifyContent: 'center', padding: 32 }}>
+        <LanguageSwitcher />
         <div className="card" style={{ maxWidth: 360, textAlign: 'center' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>
             <span aria-hidden="true">⚠️</span>
@@ -122,14 +129,13 @@ export default function TeacherPage() {
   if (!classes.length) {
     return (
       <div className="full-page" style={{ justifyContent: 'center', padding: 32 }}>
+        <LanguageSwitcher />
         <div className="card" style={{ maxWidth: 360, textAlign: 'center' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>
             <span aria-hidden="true">🏫</span>
           </div>
-          <h2 style={{ marginBottom: 8 }}>No classes yet</h2>
-          <p style={{ color: '#718096' }}>
-            Ask the administrator to add classes in the WordPress admin panel first.
-          </p>
+          <h2 style={{ marginBottom: 8 }}>{t('teacher.noClasses.title')}</h2>
+          <p style={{ color: '#718096' }}>{t('teacher.noClasses.body')}</p>
         </div>
       </div>
     );
@@ -147,6 +153,7 @@ export default function TeacherPage() {
         background: 'linear-gradient(160deg, #fff5f5 0%, #fff 60%)',
       }}
     >
+      <LanguageSwitcher />
       {/* Flash feedback */}
       {flash && (
         <div className="feedback-flash">
@@ -170,10 +177,10 @@ export default function TeacherPage() {
             <span aria-hidden="true">❤️</span>
           </div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: 8, color: '#c0392b' }}>
-            Kindness Points
+            {t('teacher.title')}
           </h1>
           <p style={{ color: '#718096', fontSize: '.9rem', marginTop: 4 }}>
-            Award a point when a pupil helps a classmate
+            {t('teacher.subtitle')}
           </p>
         </div>
 
@@ -188,7 +195,7 @@ export default function TeacherPage() {
               color: '#4a5568',
             }}
           >
-            Select class
+            {t('teacher.selectClass')}
           </label>
           <select
             className="kh-select"
@@ -222,11 +229,14 @@ export default function TeacherPage() {
             {displayPoints.toLocaleString()}
           </div>
           <div style={{ color: '#718096', fontSize: '.85rem', marginTop: 4 }}>
-            points in {selectedClass?.name ?? '…'}
+            {t('teacher.pointsInClass', {
+              count: displayPoints,
+              name: selectedClass?.name ?? '…',
+            })}
           </div>
           {totalPoints !== null && (
             <div style={{ color: '#4a5568', fontSize: '.78rem', marginTop: 2 }}>
-              {totalPoints.toLocaleString()} school-wide
+              {t('teacher.schoolWide', { count: totalPoints.toLocaleString() })}
             </div>
           )}
         </div>
@@ -237,15 +247,13 @@ export default function TeacherPage() {
             className="heart-btn"
             onClick={handleAddPoint}
             disabled={adding || !selectedId}
-            aria-label="Give a kindness point"
+            aria-label={t('teacher.giveHeart')}
           >
             {adding ? '…' : '❤️'}
           </button>
         </div>
 
-        <p style={{ color: '#4a5568', fontSize: '.8rem' }}>
-          Tap the heart to award +1 kindness point
-        </p>
+        <p style={{ color: '#4a5568', fontSize: '.8rem' }}>{t('teacher.tapHeart')}</p>
 
         {/* Error */}
         {addError && (

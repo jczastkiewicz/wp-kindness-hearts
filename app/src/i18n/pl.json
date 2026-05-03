@@ -1,0 +1,50 @@
+{
+  "teacher": {
+    "title": "Punkty życzliwości",
+    "subtitle": "Przyznaj punkt, gdy uczeń pomoże koledze lub koleżance",
+    "selectClass": "Wybierz klasę",
+    "pointsInClass": "punkty w klasie {{name}}",
+    "pointsInClass_one": "punkt w klasie {{name}}",
+    "pointsInClass_few": "punkty w klasie {{name}}",
+    "pointsInClass_many": "punktów w klasie {{name}}",
+    "schoolWide": "{{count}} w całej szkole",
+    "tapHeart": "Stuknij w serce, aby przyznać +1 punkt życzliwości",
+    "giveHeart": "Przyznaj punkt życzliwości",
+    "noToken": {
+      "title": "Wymagany dostęp",
+      "body": "Zeskanuj kod QR otrzymany od administratora szkoły, aby otworzyć aplikację dla nauczycieli."
+    },
+    "noClasses": {
+      "title": "Brak klas",
+      "body": "Poproś administratora, aby najpierw dodał klasy w panelu WordPressa."
+    },
+    "live": {
+      "addingPoint": "Dodawanie punktu życzliwości…",
+      "added": "Dodano punkt klasie {{name}}. Klasa ma teraz {{count}} punktów.",
+      "added_one": "Dodano punkt klasie {{name}}. Klasa ma teraz {{count}} punkt.",
+      "added_few": "Dodano punkt klasie {{name}}. Klasa ma teraz {{count}} punkty.",
+      "added_many": "Dodano punkt klasie {{name}}. Klasa ma teraz {{count}} punktów.",
+      "selectedClass": "wybrana klasa",
+      "errorAdding": "Wystąpił błąd podczas dodawania punktu."
+    }
+  },
+  "heart": {
+    "title": "Nasze Serce Życzliwości",
+    "subtitle": "Każda kropka to jeden moment życzliwości",
+    "schoolWideTotal": "{{count}} punktów w całej szkole!",
+    "schoolWideTotal_one": "{{count}} punkt w całej szkole!",
+    "schoolWideTotal_few": "{{count}} punkty w całej szkole!",
+    "schoolWideTotal_many": "{{count}} punktów w całej szkole!",
+    "classesHeading": "Klasy",
+    "autoRefresh": "Odświeża się automatycznie co 10 sekund ↻"
+  },
+  "lang": {
+    "switcherLabel": "Język",
+    "polish": "Polski",
+    "english": "Angielski",
+    "short": {
+      "pl": "PL",
+      "en": "EN"
+    }
+  }
+}

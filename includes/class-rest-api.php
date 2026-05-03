@@ -124,7 +124,7 @@ class KHearts_REST_API
     {
         $stored = get_option('khearts_secret_token', '');
         if (! $stored) {
-            return new WP_Error('no_token_configured', 'No token configured', ['status' => 403]);
+            return new WP_Error('no_token_configured', __('No token configured', 'kindness-hearts'), ['status' => 403]);
         }
         $provided = $request->get_param('token')
                     ?? $request->get_header('X-KHearts-Token')
@@ -133,7 +133,7 @@ class KHearts_REST_API
             return false; // No token at all → WordPress returns 401
         }
         if (! hash_equals($stored, (string) $provided)) {
-            return new WP_Error('invalid_token', 'Invalid token', ['status' => 403]);
+            return new WP_Error('invalid_token', __('Invalid token', 'kindness-hearts'), ['status' => 403]);
         }
 
         return true;
@@ -170,13 +170,13 @@ class KHearts_REST_API
 
         // Validate length and content: non-empty, max 100 chars
         if ($name === '' || mb_strlen($name) > 100) {
-            return new WP_Error('invalid_name', 'Class name must be between 1 and 100 characters', ['status' => 400]);
+            return new WP_Error('invalid_name', __('Class name must be between 1 and 100 characters', 'kindness-hearts'), ['status' => 400]);
         }
 
         // Uniqueness: do not allow duplicate class titles
         $existing = get_page_by_title($name, OBJECT, 'khearts_class');
         if ($existing) {
-            return new WP_Error('conflict', 'A class with that name already exists', ['status' => 409]);
+            return new WP_Error('conflict', __('A class with that name already exists', 'kindness-hearts'), ['status' => 409]);
         }
 
         $id = wp_insert_post([
@@ -204,7 +204,7 @@ class KHearts_REST_API
         $post = get_post($id);
 
         if (! $post || $post->post_type !== 'khearts_class') {
-            return new WP_Error('not_found', 'Class not found', ['status' => 404]);
+            return new WP_Error('not_found', __('Class not found', 'kindness-hearts'), ['status' => 404]);
         }
 
         $points = (int) get_post_meta($id, '_khearts_points', true);
@@ -231,7 +231,7 @@ class KHearts_REST_API
         $post = get_post($class_id);
 
         if (! $post || $post->post_type !== 'khearts_class') {
-            return new WP_Error('not_found', 'Class not found', ['status' => 404]);
+            return new WP_Error('not_found', __('Class not found', 'kindness-hearts'), ['status' => 404]);
         }
 
         // Rate limit: prefer scoping to the provided teacher token and class
@@ -244,7 +244,7 @@ class KHearts_REST_API
         $rl_key = 'khearts_rl_' . md5($rl_key_source);
         $rl_count = (int) get_transient($rl_key);
         if ($rl_count >= 60) {
-            return new WP_Error('rate_limited', 'Rate limit exceeded', ['status' => 429]);
+            return new WP_Error('rate_limited', __('Rate limit exceeded', 'kindness-hearts'), ['status' => 429]);
         }
         set_transient($rl_key, $rl_count + 1, MINUTE_IN_SECONDS);
 
@@ -310,7 +310,7 @@ class KHearts_REST_API
         // infrequent admin reset path.
         $lock_key = 'khearts_reset_lock';
         if (! set_transient($lock_key, 1, 5)) {
-            return new WP_Error('locked', 'Reset already in progress', ['status' => 423]);
+            return new WP_Error('locked', __('Reset already in progress', 'kindness-hearts'), ['status' => 423]);
         }
 
         // Set the global total to zero atomically.
@@ -344,7 +344,7 @@ class KHearts_REST_API
     {
         $token = get_option('khearts_secret_token', '');
         if (! $token) {
-            return new WP_Error('no_token', 'No token configured', ['status' => 404]);
+            return new WP_Error('no_token', __('No token configured', 'kindness-hearts'), ['status' => 404]);
         }
 
         return rest_ensure_response(['token' => $token]);

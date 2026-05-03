@@ -62,6 +62,29 @@ class KHearts_Admin
                 'nonce' => wp_create_nonce('wp_rest'),
                 'siteUrl' => site_url(),
                 'schoolName' => get_option('khearts_school_name', get_bloginfo('name')),
+                'locale' => str_replace('_', '-', get_locale()),
+                'i18n' => [
+                    // Inline UI / runtime
+                    'qrLibFailed' => __('QR library failed to load — please check your connection.', 'kindness-hearts'),
+                    'tokenFetchFailed' => __('Unable to load teacher QR token.', 'kindness-hearts'),
+                    'requestFailed' => __('Request failed', 'kindness-hearts'),
+                    'noClassesYet' => __('No classes yet. Add one above.', 'kindness-hearts'),
+                    'deleteBtn' => __('Delete', 'kindness-hearts'),
+                    'confirmDeleteClass' => __('Delete this class and its points?', 'kindness-hearts'),
+                    'confirmReset' => __('Reset ALL points to zero? This cannot be undone.', 'kindness-hearts'),
+                    'confirmRegen' => __('This will invalidate the old QR code. Continue?', 'kindness-hearts'),
+                    // Print poster
+                    'posterTitle' => __('Kindness Hearts – Teacher QR Code', 'kindness-hearts'),
+                    'posterTagline' => __('Scan to award kindness points when a pupil helps a classmate', 'kindness-hearts'),
+                    'posterHowTo' => __('How to use', 'kindness-hearts'),
+                    'posterStep1' => __('Scan the QR code with your phone camera', 'kindness-hearts'),
+                    'posterStep2' => __('Select your class from the dropdown', 'kindness-hearts'),
+                    'posterStep3' => __('Tap ❤️ each time a pupil helps a classmate', 'kindness-hearts'),
+                    'posterStep4' => __('Watch the heart on the class screen fill up!', 'kindness-hearts'),
+                    'posterTeachersOnly' => __('🔒 For teachers only', 'kindness-hearts'),
+                    'posterTeachersOnlyBody' => __('Please do not share this QR code with pupils.', 'kindness-hearts'),
+                    'posterQrAlt' => __('QR Code for teacher app', 'kindness-hearts'),
+                ],
             ]
         );
     }

@@ -10,6 +10,7 @@
  * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       kindness-hearts
+ * Domain Path:       /languages
  */
 
 defined('ABSPATH') || exit;
@@ -49,6 +50,25 @@ function khearts_deactivate(): void
 {
     flush_rewrite_rules();
 }
+
+// ── Internationalisation ────────────────────────────────────────────────────
+/**
+ * Load the plugin's text domain so __(), _e(), etc. resolve to translated
+ * strings. .mo files live in /languages/ inside the plugin directory.
+ *
+ * Default ships with Polish (pl_PL) and English (en_US). The active locale is
+ * determined by WordPress (Settings → General → Site Language) and can be
+ * filtered with `plugin_locale` per the WP standard.
+ */
+function khearts_load_textdomain(): void
+{
+    load_plugin_textdomain(
+        'kindness-hearts',
+        false,
+        dirname(plugin_basename(__FILE__)) . '/languages'
+    );
+}
+add_action('init', 'khearts_load_textdomain');
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
 add_action('init', ['KHearts_Frontend', 'register_cpt']);
