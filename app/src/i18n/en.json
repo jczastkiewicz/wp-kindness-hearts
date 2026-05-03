@@ -1,0 +1,44 @@
+{
+  "teacher": {
+    "title": "Kindness Points",
+    "subtitle": "Award a point when a pupil helps a classmate",
+    "selectClass": "Select class",
+    "pointsInClass": "points in {{name}}",
+    "pointsInClass_one": "point in {{name}}",
+    "schoolWide": "{{count}} school-wide",
+    "tapHeart": "Tap the heart to award +1 kindness point",
+    "giveHeart": "Give a kindness point",
+    "noToken": {
+      "title": "Access required",
+      "body": "Please scan the QR code provided by your school administrator to open the teacher app."
+    },
+    "noClasses": {
+      "title": "No classes yet",
+      "body": "Ask the administrator to add classes in the WordPress admin panel first."
+    },
+    "live": {
+      "addingPoint": "Adding a kindness point…",
+      "added": "Added a point to {{name}}. {{count}} points in the class.",
+      "added_one": "Added a point to {{name}}. {{count}} point in the class.",
+      "selectedClass": "selected class",
+      "errorAdding": "An error occurred while adding the point."
+    }
+  },
+  "heart": {
+    "title": "Our Kindness Heart",
+    "subtitle": "Every dot represents one moment of kindness",
+    "schoolWideTotal": "{{count}} points school-wide!",
+    "schoolWideTotal_one": "{{count}} point school-wide!",
+    "classesHeading": "Classes",
+    "autoRefresh": "Auto-refreshes every 10 seconds ↻"
+  },
+  "lang": {
+    "switcherLabel": "Language",
+    "polish": "Polish",
+    "english": "English",
+    "short": {
+      "pl": "PL",
+      "en": "EN"
+    }
+  }
+}

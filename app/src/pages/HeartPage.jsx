@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTotal, useClasses } from '../api/wpApi.js';
 import ResizeAwareHeart from '../components/ResizeAwareHeart.jsx';
+import LanguageSwitcher from '../components/LanguageSwitcher.jsx';
 
 /**
  * HeartPage – the public display page.
@@ -12,6 +14,7 @@ import ResizeAwareHeart from '../components/ResizeAwareHeart.jsx';
  *   - A table of classes with their individual scores
  */
 export default function HeartPage() {
+  const { t } = useTranslation();
   const { total, loading: loadingTotal } = useTotal(10_000);
   const { classes, loading: loadingClasses } = useClasses(10_000);
 
@@ -30,6 +33,7 @@ export default function HeartPage() {
           justifyContent: 'center',
         }}
       >
+        <LanguageSwitcher />
         <div className="spinner" />
       </div>
     );
@@ -47,6 +51,7 @@ export default function HeartPage() {
         gap: 32,
       }}
     >
+      <LanguageSwitcher />
       {/* Title */}
       <div style={{ textAlign: 'center' }}>
         <h1
@@ -57,10 +62,10 @@ export default function HeartPage() {
             lineHeight: 1.1,
           }}
         >
-          Our Kindness Heart <span aria-hidden="true">❤️</span>
+          {t('heart.title')} <span aria-hidden="true">❤️</span>
         </h1>
         <p style={{ color: '#718096', marginTop: 8, fontSize: 'clamp(.85rem, 2vw, 1.05rem)' }}>
-          Every dot represents one moment of kindness
+          {t('heart.subtitle')}
         </p>
       </div>
 
@@ -81,7 +86,7 @@ export default function HeartPage() {
             marginTop: 4,
           }}
         >
-          {total.toLocaleString()} {total === 1 ? 'point' : 'points'} school-wide!
+          {t('heart.schoolWideTotal', { count: total })}
         </div>
       </div>
 
@@ -97,7 +102,7 @@ export default function HeartPage() {
               fontWeight: 600,
             }}
           >
-            Classes
+            {t('heart.classesHeading')}
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {sorted.map((cls, i) => {
@@ -175,7 +180,7 @@ export default function HeartPage() {
 
       {/* Auto-refresh note */}
       <p style={{ color: '#4a5568', fontSize: '.75rem', textAlign: 'center' }}>
-        Auto-refreshes every 10 seconds ↻
+        {t('heart.autoRefresh')}
       </p>
     </div>
   );
