@@ -38,11 +38,10 @@ export default function LanguageSwitcher() {
           <button
             key={lng}
             type="button"
+            data-lang={lng}
             onClick={() => setLanguage(lng)}
             aria-pressed={active}
-            aria-label={
-              lng === 'pl' ? t('lang.polish') : t('lang.english')
-            }
+            aria-label={lng === 'pl' ? t('lang.polish') : t('lang.english')}
             style={{
               border: 'none',
               cursor: active ? 'default' : 'pointer',

@@ -7,6 +7,10 @@
  * locale or browser language. The seeded value has the highest precedence
  * in detectInitialLanguage() — see app/src/i18n/index.js.
  *
+ * Selectors note: the LanguageSwitcher buttons have stable `data-lang="pl"`
+ * and `data-lang="en"` attributes specifically so tests don't have to chase
+ * the localized aria-label (which itself changes when the language changes).
+ *
  * Verifies:
  *
  *   - Polish renders correctly when seeded and is the visible default.
@@ -29,23 +33,29 @@ function readToken() {
 }
 
 /**
- * Force the app to boot in Polish by pre-seeding localStorage. This is
- * stable regardless of the WordPress site language: detectInitialLanguage()
- * checks localStorage first.
+ * Force the app to boot in a known language by seeding localStorage. The
+ * seeded value has the highest precedence in detectInitialLanguage().
  *
- * We seed via addInitScript so the value is present before the React app
- * imports its i18n module on the first navigation.
+ * IMPORTANT: addInitScript runs on every navigation in the same context,
+ * including page.reload(). To avoid clobbering a user-changed value during
+ * persistence tests, we only set the key when it isn't already present.
  */
 async function seedLang(page, lang) {
   await page.addInitScript((value) => {
     try {
-      localStorage.setItem('kh-lang', value);
+      if (!localStorage.getItem('kh-lang')) {
+        localStorage.setItem('kh-lang', value);
+      }
     } catch {
       // ignore — sandboxed contexts may block localStorage; the test will
       // simply fall back to whatever WP_CONFIG/browser detection picks
     }
   }, lang);
 }
+
+// Locale-stable selectors (rely on data-lang attribute, not translated labels)
+const plButton = (page) => page.locator('[data-lang="pl"]');
+const enButton = (page) => page.locator('[data-lang="en"]');
 
 test.describe('Language switcher — Teacher page', () => {
 
@@ -61,25 +71,21 @@ test.describe('Language switcher — Teacher page', () => {
     await expect(page.getByText('Wybierz klasę')).toBeVisible();
 
     // Switcher group is present and PL is the active button
-    const switcher = page.getByRole('group', { name: /Język|Language/ });
+    const switcher = page.getByRole('group');
     await expect(switcher).toBeVisible();
-    const plBtn = switcher.getByRole('button', { name: 'Polski' });
-    const enBtn = switcher.getByRole('button', { name: 'Angielski' });
-    await expect(plBtn).toHaveAttribute('aria-pressed', 'true');
-    await expect(enBtn).toHaveAttribute('aria-pressed', 'false');
+    await expect(plButton(page)).toHaveAttribute('aria-pressed', 'true');
+    await expect(enButton(page)).toHaveAttribute('aria-pressed', 'false');
 
     // Click EN
-    await enBtn.click();
+    await enButton(page).click();
 
     // Heading flips to English
     await expect(page.getByRole('heading', { name: 'Kindness Points' })).toBeVisible();
     await expect(page.getByText('Select class')).toBeVisible();
 
     // aria-pressed flips
-    await expect(switcher.getByRole('button', { name: 'English' })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    );
+    await expect(enButton(page)).toHaveAttribute('aria-pressed', 'true');
+    await expect(plButton(page)).toHaveAttribute('aria-pressed', 'false');
 
     // <html lang> reflects the active language
     await expect(page.locator('html')).toHaveAttribute('lang', 'en-US');
@@ -95,14 +101,15 @@ test.describe('Language switcher — Teacher page', () => {
     });
 
     // Switch to English
-    await page.getByRole('button', { name: 'Angielski' }).click();
+    await enButton(page).click();
     await expect(page.getByRole('heading', { name: 'Kindness Points' })).toBeVisible();
 
     // localStorage should now hold the choice
     const stored = await page.evaluate(() => localStorage.getItem('kh-lang'));
     expect(stored).toBe('en');
 
-    // Reload — the choice should survive
+    // Reload — the choice should survive (seedLang's init script is guarded
+    // to only seed when localStorage is empty, so it won't clobber 'en')
     await page.reload();
     await expect(page.getByRole('heading', { name: 'Kindness Points' })).toBeVisible({
       timeout: 20_000,
@@ -120,7 +127,7 @@ test.describe('Language switcher — Teacher page', () => {
       timeout: 20_000,
     });
 
-    await page.getByRole('button', { name: 'Polski' }).click();
+    await plButton(page).click();
 
     await expect(page.getByRole('heading', { name: 'Punkty życzliwości' })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'pl-PL');
@@ -143,7 +150,7 @@ test.describe('Language switcher — Heart page (public)', () => {
     await expect(page.getByText('Klasy')).toBeVisible();
 
     // Switch to English
-    await page.getByRole('button', { name: 'Angielski' }).click();
+    await enButton(page).click();
 
     await expect(page.getByRole('heading', { name: /Our Kindness Heart/ })).toBeVisible();
     await expect(page.getByText('Classes')).toBeVisible();
@@ -160,7 +167,7 @@ test.describe('Language switcher — access-required gate', () => {
     // Polish copy on the gate
     await expect(page.getByText('Wymagany dostęp')).toBeVisible({ timeout: 20_000 });
 
-    await page.getByRole('button', { name: 'Angielski' }).click();
+    await enButton(page).click();
 
     await expect(page.getByText('Access required')).toBeVisible();
   });
