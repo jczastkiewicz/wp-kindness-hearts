@@ -26,8 +26,7 @@ export function detectInitialLanguage() {
     // fall through to the next signal.
   }
 
-  const fromWp =
-    typeof window !== 'undefined' && window.WP_CONFIG && window.WP_CONFIG.locale;
+  const fromWp = typeof window !== 'undefined' && window.WP_CONFIG && window.WP_CONFIG.locale;
   if (fromWp && /^en/i.test(fromWp)) return 'en';
   if (fromWp && /^pl/i.test(fromWp)) return 'pl';
 

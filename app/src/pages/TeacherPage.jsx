@@ -66,9 +66,7 @@ export default function TeacherPage() {
 
       const cls = classes.find((c) => String(c.id) === selectedId);
       const className = cls?.name || t('teacher.live.selectedClass');
-      setLiveMessage(
-        t('teacher.live.added', { name: className, count: res.class_points })
-      );
+      setLiveMessage(t('teacher.live.added', { name: className, count: res.class_points }));
       // Clear live message after it's been read
       setTimeout(() => setLiveMessage(''), 3000);
     } catch (e) {
@@ -91,9 +89,7 @@ export default function TeacherPage() {
           <div style={{ fontSize: '3rem', marginBottom: 16 }}>
             <span aria-hidden="true">🔑</span>
           </div>
-          <h2 style={{ color: '#c0392b', marginBottom: 8 }}>
-            {t('teacher.noToken.title')}
-          </h2>
+          <h2 style={{ color: '#c0392b', marginBottom: 8 }}>{t('teacher.noToken.title')}</h2>
           <p style={{ color: '#718096' }}>{t('teacher.noToken.body')}</p>
         </div>
       </div>
