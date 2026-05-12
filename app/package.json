@@ -16,7 +16,7 @@
     "coverage": "vitest run --coverage --passWithNoTests"
   },
   "dependencies": {
-    "i18next": "^23.15.0",
+    "i18next": "^26.1.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-i18next": "^15.0.0",
