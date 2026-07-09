@@ -27,6 +27,20 @@ export async function wpLogin(page) {
 }
 
 /**
+ * Dismiss any dismissible admin notices (core update nags, "Try Gutenberg",
+ * privacy policy reminders, etc). The test WP image tracks `wordpress:latest`,
+ * so these vary run to run and can visually overlap buttons we need to click,
+ * causing Playwright's actionability checks to hang waiting for stability.
+ */
+export async function dismissAdminNotices(page) {
+  const dismissButtons = page.locator('.notice.is-dismissible .notice-dismiss');
+  const count = await dismissButtons.count();
+  for (let i = 0; i < count; i++) {
+    await dismissButtons.first().click({ timeout: 5_000 }).catch(() => {});
+  }
+}
+
+/**
  * Navigate to the Kindness Hearts admin page and return the page.
  */
 export async function gotoKindnessAdmin(page) {

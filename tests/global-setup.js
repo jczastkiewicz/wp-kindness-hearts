@@ -13,7 +13,7 @@ import { chromium } from '@playwright/test';
 import fs   from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { wpLogin, extractToken, AUTH_FILE, STATE_FILE } from './helpers/wp-auth.js';
+import { wpLogin, extractToken, dismissAdminNotices, AUTH_FILE, STATE_FILE } from './helpers/wp-auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -39,6 +39,7 @@ export default async function globalSetup() {
   // ── 2. Reinstall plugin fresh on every run ─────────────────────────────────
   // Always delete + re-upload so the zip built from current source is what runs.
   await page.goto('/wp-admin/plugins.php');
+  await dismissAdminNotices(page);
 
   const pluginRow = page.locator('tr[data-plugin="wp-kindness-hearts/wp-kindness-hearts.php"]');
 
@@ -87,7 +88,8 @@ export default async function globalSetup() {
 
   // Click "Activate Plugin"
   console.log('[setup] Activating plugin…');
-  await page.click('a:has-text("Activate Plugin")');
+  await dismissAdminNotices(page);
+  await page.locator('a:has-text("Activate Plugin")').click({ timeout: 30_000 });
 
   // Wait for plugins list to confirm activation
   await page.waitForURL('**/plugins.php**', { timeout: 15_000 });
