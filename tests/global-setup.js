@@ -86,10 +86,20 @@ export default async function globalSetup() {
     throw new Error(`Plugin install failed: ${errorText}`);
   }
 
-  // Click "Activate Plugin"
+  // Activate the plugin. We navigate to the link's href directly instead of
+  // clicking it: this is a plain <a href> (no JS confirm), and Playwright's
+  // actionability checks (visible/enabled/stable) have proven flaky against
+  // this button on the floating `wordpress:latest` image — the link is
+  // present in the DOM but the click's stability check hangs for the full
+  // timeout even after dismissing notices, so we sidestep it entirely.
   console.log('[setup] Activating plugin…');
   await dismissAdminNotices(page);
-  await page.locator('a:has-text("Activate Plugin")').click({ timeout: 30_000 });
+  const activateLink = page.locator('a:has-text("Activate Plugin")');
+  await activateLink.waitFor({ state: 'attached', timeout: 30_000 });
+  const activateHref = await activateLink.getAttribute('href');
+  // Resolve against the current page URL (not baseURL) since the href is
+  // relative to /wp-admin/.
+  await page.goto(new URL(activateHref, page.url()).toString());
 
   // Wait for plugins list to confirm activation
   await page.waitForURL('**/plugins.php**', { timeout: 15_000 });
