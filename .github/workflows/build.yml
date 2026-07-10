@@ -11,22 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: app/package-lock.json
+      - name: Setup Node environment
+        uses: ./.github/actions/setup-node-env
 
       - name: Install dependencies
         working-directory: app
-        # Use npm install in CI to tolerate lockfile format differences across runner/npm versions.
-        # The repo includes a committed package-lock.json; if CI environment supports npm ci reliably,
-        # we can revert this to `npm ci` for stricter installs.
-        run: npm install --no-audit --no-fund
+        run: npm ci
 
       - name: Build React app
         working-directory: app
@@ -72,22 +62,7 @@ jobs:
           echo "> Coverage is collected from Vitest unit tests. Full E2E coverage is tracked via Playwright integration tests." >> $GITHUB_STEP_SUMMARY
 
       - name: Package plugin zip
-        run: |
-          cd ..
-          zip -r wp-kindness-hearts/wp-kindness-hearts.zip wp-kindness-hearts \
-            --include \
-              "wp-kindness-hearts/wp-kindness-hearts.php" \
-              "wp-kindness-hearts/readme.txt" \
-              "wp-kindness-hearts/LICENSE" \
-              "wp-kindness-hearts/includes/*.php" \
-              "wp-kindness-hearts/assets/js/*" \
-              "wp-kindness-hearts/app/dist/*" \
-              "wp-kindness-hearts/app/dist/**/*" \
-              "wp-kindness-hearts/app/dist/.vite/*" \
-              "wp-kindness-hearts/app/public/heart-192.png" \
-              "wp-kindness-hearts/app/public/heart-512.png" \
-              "wp-kindness-hearts/app/public/manifest.json" \
-            -x "*.DS_Store" -x "*__MACOSX*" -x "*/app/dist/index.html"
+        run: bash build-plugin.sh
 
       - name: Upload zip as artifact
         uses: actions/upload-artifact@v7

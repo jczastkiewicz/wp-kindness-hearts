@@ -58,15 +58,8 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: app/package-lock.json
+      - name: Setup Node environment
+        uses: ./.github/actions/setup-node-env
 
       - name: Build plugin
         run: bash build-plugin.sh
