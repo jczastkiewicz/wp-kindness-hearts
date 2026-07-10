@@ -12,17 +12,45 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      # ── 1. Checkout + Node.js ─────────────────────────────────────────────────
-      - name: Setup Node environment
-        uses: ./.github/actions/setup-node-env
+      # ── 1. Checkout ───────────────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v7
 
-      # ── 2. Build the app and package the plugin zip ──────────────────────────
+      # ── 2. Build the React app ────────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install app dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build React app
+        working-directory: app
+        run: npm run build
+
+      # ── 3. Build plugin zip ───────────────────────────────────────────────────
       - name: Build plugin zip
         run: |
-          bash build-plugin.sh
-          echo "Zip size: $(du -sh wp-kindness-hearts.zip)"
+          cd ..
+          zip -r wp-kindness-hearts/wp-kindness-hearts.zip wp-kindness-hearts \
+            --include \
+              "wp-kindness-hearts/wp-kindness-hearts.php" \
+              "wp-kindness-hearts/includes/*.php" \
+              "wp-kindness-hearts/assets/js/*" \
+              "wp-kindness-hearts/app/dist/*" \
+              "wp-kindness-hearts/app/dist/**/*" \
+              "wp-kindness-hearts/app/dist/.vite/*" \
+              "wp-kindness-hearts/app/public/heart-192.png" \
+              "wp-kindness-hearts/app/public/heart-512.png" \
+              "wp-kindness-hearts/app/public/manifest.json" \
+            -x "*.DS_Store" -x "*__MACOSX*" -x "*/app/dist/index.html"
+          echo "Zip size: $(du -sh wp-kindness-hearts/wp-kindness-hearts.zip)"
 
-      # ── 3. Start clean WordPress ──────────────────────────────────────────────
+      # ── 4. Start clean WordPress ──────────────────────────────────────────────
       - name: Start test WordPress (Docker Compose)
         run: |
           docker compose -f docker-compose.test.yml up -d \
@@ -58,19 +86,19 @@ jobs:
           fi
           echo "WordPress is up at http://localhost:8082"
 
-      # ── 4. Install Playwright ─────────────────────────────────────────────────
+      # ── 5. Install Playwright ─────────────────────────────────────────────────
       - name: Install Playwright dependencies
         working-directory: tests
         run: |
           npm ci
           npx playwright install chromium --with-deps
 
-      # ── 5. Run integration tests ──────────────────────────────────────────────
+      # ── 6. Run integration tests ──────────────────────────────────────────────
       - name: Run Playwright integration tests
         working-directory: tests
         run: npx playwright test
 
-      # ── 6. Upload results (always, so failures are inspectable) ──────────────
+      # ── 7. Upload results (always, so failures are inspectable) ──────────────
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v7
@@ -87,7 +115,7 @@ jobs:
           path: tests/test-results/
           retention-days: 7
 
-      # ── 7. Write job summary ─────────────────────────────────────────────────
+      # ── 8. Write job summary ─────────────────────────────────────────────────
       - name: Write job summary
         if: always()
         working-directory: tests
@@ -107,7 +135,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📄 Full report available in the **playwright-report** artifact above." >> $GITHUB_STEP_SUMMARY
 
-      # ── 8. Tear down Docker ───────────────────────────────────────────────────
+      # ── 9. Tear down Docker ───────────────────────────────────────────────────
       - name: Stop Docker containers
         if: always()
         run: docker compose -f docker-compose.test.yml down -v
