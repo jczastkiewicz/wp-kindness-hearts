@@ -127,7 +127,11 @@ export default async function globalSetup() {
     if (!existingRows.includes(seedName)) {
       console.log(`[setup] Seeding class "${seedName}"…`);
       await page.fill('#kh-class-name', seedName);
-      await page.click('#kh-add-class-form button[type="submit"]');
+      // Submit via requestSubmit() instead of clicking the button: the same
+      // actionability-check hang documented above for the Activate Plugin
+      // link also hits this submit button on the floating `wordpress:latest`
+      // image, so we sidestep the click entirely.
+      await page.locator('#kh-add-class-form').evaluate(form => form.requestSubmit());
       await page.waitForSelector(`#kh-classes-body td:text("${seedName}")`, { timeout: 10_000 });
     } else {
       console.log(`[setup] Class "${seedName}" already exists — skipping.`);
