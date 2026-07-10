@@ -1,0 +1,15 @@
+name: Setup Node environment
+description: Checkout the repo and set up Node.js 24 with npm caching for the app workspace
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24
+        cache: npm
+        cache-dependency-path: app/package-lock.json
